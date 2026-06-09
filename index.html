@@ -281,12 +281,15 @@ function schedule(card, rating){ // rating: 'again' | 'good' | 'easy'
 function dueCards(){ const now=Date.now(); return DB.cards.filter(c=>c.due<=now).sort((a,b)=>a.due-b.due); }
 
 // ---------- Datamuse word-web (free, no key, needs WiFi) ----------
-const webCache={};
+const webCache={}, freqCache={};
+function parseFreq(tags){ if(!tags) return null; const t=tags.find(x=>x.indexOf('f:')===0); return t?parseFloat(t.slice(2)):null; }
+function noteFreqs(list){ for(const x of list){ const f=parseFreq(x.tags); if(f!=null) freqCache[x.word]=f; } }
 async function fetchWeb(word){
   if(webCache[word]) return webCache[word];
-  const q=(rel)=>fetch(`https://api.datamuse.com/words?rel_${rel}=${encodeURIComponent(word)}&max=8`).then(r=>r.json()).catch(()=>[]);
+  const q=(rel)=>fetch(`https://api.datamuse.com/words?rel_${rel}=${encodeURIComponent(word)}&md=f&max=8`).then(r=>r.json()).catch(()=>[]);
   try{
     const [syn,ant,col]=await Promise.all([q('syn'),q('ant'),q('bga')]); // bga = words that frequently FOLLOW the word (collocations)
+    noteFreqs(syn); noteFreqs(ant); noteFreqs(col);     // md=f gives real usage frequency
     const out={
       syn:syn.map(x=>x.word).slice(0,8),
       ant:ant.map(x=>x.word).slice(0,8),
@@ -294,6 +297,15 @@ async function fetchWeb(word){
     };
     webCache[word]=out; return out;
   }catch(e){ return {syn:[],ant:[],col:[],offline:true}; }
+}
+// frequency of a single word (occurrences per million) — for node size
+async function getFreq(word){
+  if(freqCache[word]!=null) return freqCache[word];
+  try{
+    const r=await fetch(`https://api.datamuse.com/words?sp=${encodeURIComponent(word)}&md=f&max=1`).then(r=>r.json());
+    const f = r&&r[0]? parseFreq(r[0].tags) : 0;
+    freqCache[word]= (f==null?0:f); return freqCache[word];
+  }catch(e){ return null; }
 }
 
 // ---------- pronunciation (browser TTS, offline) ----------
@@ -414,9 +426,23 @@ function renderAdd(){
       <p class="small" style="margin-top:10px">Loading a pack adds its words (skips any you already have), each with definition + root.</p>
     </div>
     <div class="card">
-      <h3 style="margin-top:0">Bulk add</h3>
-      <textarea id="bulk" style="width:100%;min-height:90px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;font-family:inherit" placeholder="One word per line. Paste a whole SAT list here."></textarea>
+      <h3 style="margin-top:0">Bulk add / make your own list</h3>
+      <textarea id="bulk" style="width:100%;min-height:100px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;font-family:inherit" placeholder="One word per line, e.g.&#10;ubiquitous&#10;candid = honest and direct&#10;resilient | able to recover quickly | Latin resilire = bounce back"></textarea>
       <div class="row"><button class="act b-ghost" onclick="bulkAdd()">Add all</button></div>
+      <p class="small" style="margin-top:10px;line-height:1.7">Each line = one word. Add the meaning yourself, or leave it blank to look it up online:<br>
+        • <b>word</b> — just the word<br>
+        • <b>word = definition</b><br>
+        • <b>word | definition | root note</b></p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">💾 Backup / move your words (file)</h3>
+      <p class="small" style="margin-top:0">Save everything (words + progress) to a file you can keep or copy to another phone, then load it back later.</p>
+      <div class="row">
+        <button class="act b-ghost" onclick="exportWords()">⬇️ Save to file</button>
+        <button class="act b-ghost" onclick="document.getElementById('impfile').click()">⬆️ Load from file</button>
+      </div>
+      <input id="impfile" type="file" accept=".json,application/json" style="display:none" onchange="importFile(this)" />
+      <p class="small" style="margin-top:10px">It’s a plain-text <b>.json</b> file. Loading adds any words you don’t already have and keeps your current progress.</p>
     </div>
     `;
 }
@@ -437,14 +463,50 @@ async function addWord(){
   DB.cards.push(Object.assign(seedToCard({w,def:d,pos}),{}));
   save(DB); flash('Added ✓'); go('browse');
 }
+// a bulk line can be: "word"  |  "word = definition"  |  "word | definition | root"
+function parseLine(line){
+  if(line.includes('|')){ const p=line.split('|').map(s=>s.trim()); return {w:p[0], def:p[1]||'', root:p[2]||''}; }
+  const m=line.match(/^([A-Za-z][A-Za-z '\-]*?)\s*[:=]\s*(.+)$/);
+  if(m) return {w:m[1].trim(), def:m[2].trim(), root:''};
+  return {w:line.trim(), def:'', root:''};
+}
 async function bulkAdd(){
-  const lines=document.getElementById('bulk').value.split('\n').map(x=>x.trim().toLowerCase()).filter(Boolean);
-  for(const w of lines){
+  const lines=document.getElementById('bulk').value.split('\n').map(x=>x.trim()).filter(Boolean);
+  let added=0;
+  for(const line of lines){
+    const e=parseLine(line); const w=e.w.toLowerCase(); if(!w) continue;
     if(DB.cards.some(c=>c.w===w)) continue;
-    const r=await lookupDef(w);
-    DB.cards.push(seedToCard({w,def:r.def,pos:r.pos}));
+    let def=e.def, pos='';
+    if(!def){ const r=await lookupDef(w); def=r.def; pos=r.pos; }
+    DB.cards.push(seedToCard({w, def, pos, root:e.root}));
+    added++;
   }
-  save(DB); flash(`Added ${lines.length} ✓`); go('browse');
+  save(DB); flash(`Added ${added} ✓`); go('browse');
+}
+
+// ---- backup / transfer as a plain-text .json file ----
+function exportWords(){
+  const data=JSON.stringify({app:'vokab', v:1, exported:Date.now(), cards:DB.cards}, null, 2);
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([data],{type:'application/json'}));
+  a.download='vokab-words.json'; a.click(); URL.revokeObjectURL(a.href);
+  flash('Saved file ✓');
+}
+function importFile(input){
+  const f=input.files&&input.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{ importJSON(r.result); input.value=''; }; r.readAsText(f);
+}
+function importJSON(str){
+  let data; try{ data=JSON.parse(str); }catch(e){ flash('That file isn’t valid'); return; }
+  const arr=Array.isArray(data)?data:(data.cards||[]);
+  let added=0;
+  for(const e of arr){
+    const w=(e.w||'').toLowerCase().trim(); if(!w || DB.cards.some(c=>c.w===w)) continue;
+    const card=seedToCard({w, pos:e.pos, def:e.def, root:e.root});
+    ['ease','interval','reps','due','lapses','sentence','freq'].forEach(k=>{ if(e[k]!=null) card[k]=e[k]; }); // keep progress if present
+    DB.cards.push(card); added++;
+  }
+  save(DB); flash(`Imported ${added} ✓`); go('browse');
 }
 
 function loadPack(name){
@@ -532,6 +594,12 @@ function netColor(c){
   if(c.interval>=21) return '#34d399';        // well learned (green)
   return '#22d3ee';                           // learning (cyan)
 }
+// node radius by how COMMON the word is in real life (freq = uses per million)
+function nodeR(n){
+  const f = n.ghost ? n.freq : (n.c ? n.c.freq : null);
+  if(f==null) return n.ghost?6:7;             // commonness not known yet
+  return 5 + Math.min(16, Math.log10(f+1)*6); // common words → bigger
+}
 
 let net=null;
 function renderWeb(){
@@ -545,10 +613,12 @@ function renderWeb(){
   m.innerHTML=`<div class="webwrap">
     <canvas id="net"></canvas>
     <div class="legend">
+      <b style="color:var(--muted)">colour = progress</b><br>
       <i style="background:#9aa3c7"></i>new<br>
       <i style="background:#22d3ee"></i>learning<br>
       <i style="background:#fb7185"></i>due now<br>
-      <i style="background:#34d399"></i>learned
+      <i style="background:#34d399"></i>learned<br>
+      <span style="opacity:.85">size = how common</span>
     </div>
     <div class="netbtns">
       <button onclick="netZoom(1.25)">＋</button>
@@ -574,6 +644,16 @@ function startNet(){
   bindNet();
   window.addEventListener('resize', sizeNet);
   net.raf=requestAnimationFrame(frameNet);
+  ensureFreqs();                       // size nodes by real-world commonness (online, cached after)
+}
+// fetch+cache word frequency for any deck words that don't have it yet
+async function ensureFreqs(){
+  const todo=DB.cards.filter(c=>c.freq==null);
+  if(!todo.length) return;
+  let i=0;
+  const worker=async()=>{ while(net && i<todo.length){ const c=todo[i++]; const f=await getFreq(c.w); if(f!=null) c.freq=f; } };
+  await Promise.all([worker(),worker(),worker(),worker(),worker(),worker()]); // 6 at a time
+  if(!net) return; save(DB); drawNet();
 }
 function stopNet(){
   if(!net) return;
@@ -650,7 +730,7 @@ function drawNet(){
   // nodes
   const showAll = t.s>=1.15 || net.nodes.length<=22;
   for(const n of net.nodes){
-    const r = n.ghost?6:6+Math.min(n.c.reps,6);
+    const r = nodeR(n);
     const dim = sel && n!==sel && !(adj&&adj.has(n.id));
     ctx.globalAlpha = dim?0.22:1;
     const col = n.ghost?relColor[n.rel]:netColor(n.c);
@@ -730,7 +810,7 @@ async function expandNode(id){
       const ex=net.nodes.find(n=>n.w===w);
       if(ex){ if(ex!==node) addEdge(node,ex, ex.ghost?2:3, ex.ghost?rel:undefined); continue; }
       const ng={ id:'g:'+w, i:net.nodes.length, w, ghost:true, rel, from:node.w, c:null,
-        defT:new Set(), rootT:new Set(),
+        freq:(freqCache[w]!=null?freqCache[w]:null), defT:new Set(), rootT:new Set(),
         x:node.x+(Math.random()-.5)*70, y:node.y+(Math.random()-.5)*70, vx:0,vy:0,fx:0,fy:0 };
       net.nodes.push(ng); addEdge(node,ng,2,rel); added++;
     }
@@ -744,7 +824,9 @@ async function addGhost(id){
   flash('Adding…');
   let card=DB.cards.find(c=>c.w===node.w);
   if(!card){ const r=await lookupDef(node.w); if(!net) return;
-    card=seedToCard({w:node.w, def:r.def, pos:r.pos}); DB.cards.push(card); save(DB); }
+    card=seedToCard({w:node.w, def:r.def, pos:r.pos});
+    if(node.freq!=null) card.freq=node.freq;
+    DB.cards.push(card); save(DB); }
   node.ghost=false; node.c=card; node.rel=undefined;
   node.defT=new Set(netToks(card.def+' '+card.pos)); node.rootT=new Set();
   renderStats(); netSelect(node);       // panel refreshes as a real, studyable word
