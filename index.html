@@ -487,7 +487,7 @@ function netToks(str){               // -> array of meaningful tokens
 function buildGraph(){
   const cards=DB.cards;
   const nodes=cards.map((c,i)=>({
-    id:c.id, i, w:c.w, c,
+    id:c.id, i, w:c.w, c, ghost:false, rel:undefined, from:null,
     defT:new Set(netToks(c.def+' '+c.pos)),
     rootT:new Set(netToks(c.root)),
     x:0,y:0,vx:0,vy:0,fx:0,fy:0
@@ -555,7 +555,7 @@ function renderWeb(){
       <button onclick="netZoom(0.8)">－</button>
       <button onclick="netReset()">⟳</button>
     </div>
-    <div class="webhint">drag a node · pinch / scroll to zoom · tap a word</div>
+    <div class="webhint">tap a word → 🔎 Related to grow the web · hollow rings = not in your deck · drag / pinch to move</div>
   </div>`;
   startNet();
 }
@@ -567,6 +567,7 @@ function startNet(){
   net={...g, cv, ctx:cv.getContext('2d'), tf:{s:1,x:0,y:0}, sel:null,
     cx:0, cy:0, alpha:1, raf:null, dragNode:null, dragging:false, pinching:false,
     pointers:new Map(), pinchStart:null, moved:0, downId:null, dpr:Math.min(devicePixelRatio||1,2)};
+  net.ekeys=new Set(); for(const e of net.edges) net.ekeys.add(ekey(e.a,e.b));
   sizeNet();
   // center the canvas origin on the middle of the view
   net.tf.x=net.cx; net.tf.y=net.cy;
@@ -626,33 +627,41 @@ function tickNet(){
 }
 
 // --- drawing ---
+const relColor={syn:'#34d399',ant:'#fb7185',col:'#7c83ff'};   // synonym / opposite / collocation
 function drawNet(){
   if(!net) return; const ctx=net.ctx, t=net.tf, d=net.dpr;
   ctx.setTransform(d,0,0,d,0,0);
   ctx.clearRect(0,0,net.cv.width,net.cv.height);
   ctx.translate(t.x,t.y); ctx.scale(t.s,t.s);
-  const sel=net.sel, adj=sel?net.adj[sel.id]:null;
+  const sel=net.sel;
+  let adj=null;
+  if(sel){ adj=new Set(); for(const e of net.edges){ const a=net.nodes[e.a],b=net.nodes[e.b];
+    if(a===sel)adj.add(b.id); else if(b===sel)adj.add(a.id); } }
   // edges
   for(const e of net.edges){
     const a=net.nodes[e.a], b=net.nodes[e.b];
     const hot=sel && (a===sel||b===sel);
-    ctx.strokeStyle=sel? (hot?'rgba(124,131,255,.9)':'rgba(124,131,255,.07)')
-                       : `rgba(124,131,255,${0.12+Math.min(e.w,5)*0.05})`;
+    ctx.globalAlpha = sel ? (hot?0.95:0.05) : (e.rel?0.55:0.5);
+    ctx.strokeStyle = e.rel?relColor[e.rel]:`rgba(124,131,255,${0.3+Math.min(e.w,5)*0.08})`;
     ctx.lineWidth=(hot?2:1)/t.s;
     ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
   }
+  ctx.globalAlpha=1;
   // nodes
   const showAll = t.s>=1.15 || net.nodes.length<=22;
   for(const n of net.nodes){
-    const r=6+Math.min(n.c.reps,6);
+    const r = n.ghost?6:6+Math.min(n.c.reps,6);
     const dim = sel && n!==sel && !(adj&&adj.has(n.id));
-    ctx.globalAlpha = dim?0.3:1;
-    ctx.fillStyle=netColor(n.c);
-    ctx.beginPath(); ctx.arc(n.x,n.y,r,0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha = dim?0.22:1;
+    const col = n.ghost?relColor[n.rel]:netColor(n.c);
+    ctx.beginPath(); ctx.arc(n.x,n.y,r,0,Math.PI*2);
+    if(n.ghost){ ctx.fillStyle='#0f1220'; ctx.fill(); ctx.lineWidth=2/t.s; ctx.strokeStyle=col; ctx.stroke(); }
+    else { ctx.fillStyle=col; ctx.fill(); }
     if(n===sel){ ctx.strokeStyle='#fff'; ctx.lineWidth=2.5/t.s; ctx.stroke(); }
     if(showAll || n===sel || (adj&&adj.has(n.id))){
-      ctx.globalAlpha = dim?0.3:1;
-      ctx.fillStyle='#eef1ff'; ctx.font=`${12/t.s}px -apple-system,Segoe UI,Roboto,sans-serif`;
+      ctx.globalAlpha = dim?0.22:1;
+      ctx.fillStyle = n.ghost?col:'#eef1ff';
+      ctx.font=`${(n.ghost?11:12)/t.s}px -apple-system,Segoe UI,Roboto,sans-serif`;
       ctx.textAlign='center'; ctx.textBaseline='top';
       ctx.fillText(n.w, n.x, n.y+r+2);
     }
@@ -668,23 +677,78 @@ function netZoom(f){ if(!net) return; const t=net.tf;
 function netReset(){ if(!net) return; net.tf={s:1,x:net.cx,y:net.cy}; net.sel=null; closePanel(); reheat(0.6); }
 
 // --- selection panel ---
+const relLabel={syn:'synonym',ant:'opposite',col:'often follows'};
+const ghostBtn='background:var(--card2);color:var(--ink);border:1px solid var(--line);margin-top:0';
 function netSelect(n){
   net.sel=n; drawNet();
   let p=document.getElementById('netpanel');
   if(!p){ p=document.createElement('div'); p.id='netpanel'; p.className='netpanel';
     document.querySelector('.webwrap').appendChild(p); }
-  const c=n.c;
-  p.innerHTML=`<span class="x" onclick="closePanel()">✕</span>
-    <div class="w">${c.w}</div>
-    ${c.pos?`<div class="p">${c.pos}</div>`:''}
-    <div class="d">${c.def||'<span style="color:var(--muted)">no definition yet</span>'}</div>
-    <button class="go" onclick="netStudy('${c.id}')">Study this word →</button>`;
+  if(n.ghost){
+    p.innerHTML=`<span class="x" onclick="closePanel()">✕</span>
+      <div class="w">${n.w}</div>
+      <div class="p">${relLabel[n.rel]||'related'}${n.from?` of “${n.from}”`:''} · not in your words yet</div>
+      <div class="d" style="color:var(--muted)">Add it to your deck (a definition is fetched online), or keep exploring its links.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:11px">
+        <button class="go" style="margin-top:0" onclick="addGhost('${n.id}')">➕ Add to my words</button>
+        <button class="go" style="${ghostBtn}" onclick="expandNode('${n.id}')">🔎 Related</button>
+      </div>`;
+  } else {
+    const c=n.c;
+    p.innerHTML=`<span class="x" onclick="closePanel()">✕</span>
+      <div class="w">${c.w}</div>
+      ${c.pos?`<div class="p">${c.pos}</div>`:''}
+      <div class="d">${c.def||'<span style="color:var(--muted)">no definition yet</span>'}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:11px">
+        <button class="go" style="margin-top:0" onclick="netStudy('${c.id}')">Study this →</button>
+        <button class="go" style="${ghostBtn}" onclick="expandNode('${n.id}')">🔎 Related</button>
+      </div>`;
+  }
 }
 function closePanel(){ const p=document.getElementById('netpanel'); if(p) p.remove(); if(net){ net.sel=null; drawNet(); } }
 function netStudy(id){
   const c=DB.cards.find(x=>x.id===id); if(!c) return;
   c.due=Date.now(); save(DB);          // make it due so Study shows it next
   go('study');
+}
+
+// --- live exploration via Datamuse (real synonyms/opposites/collocations) ---
+function ekey(a,b){ return a<b?a+'_'+b:b+'_'+a; }
+function addEdge(na,nb,w,rel){ const k=ekey(na.i,nb.i); if(net.ekeys.has(k)) return;
+  net.ekeys.add(k); net.edges.push({a:na.i,b:nb.i,w,rel}); }
+
+async function expandNode(id){
+  if(!net) return;
+  const node=net.nodes.find(n=>n.id===id); if(!node) return;
+  flash('Loading related words…');
+  const data=await fetchWeb(node.w);
+  if(!net) return;                      // user left the tab while loading
+  if(data.offline){ flash('Offline — connect to WiFi to explore'); return; }
+  let added=0;
+  for(const [rel,arr] of [['syn',data.syn],['ant',data.ant],['col',data.col]])
+    for(const w of (arr||[])){
+      const ex=net.nodes.find(n=>n.w===w);
+      if(ex){ if(ex!==node) addEdge(node,ex, ex.ghost?2:3, ex.ghost?rel:undefined); continue; }
+      const ng={ id:'g:'+w, i:net.nodes.length, w, ghost:true, rel, from:node.w, c:null,
+        defT:new Set(), rootT:new Set(),
+        x:node.x+(Math.random()-.5)*70, y:node.y+(Math.random()-.5)*70, vx:0,vy:0,fx:0,fy:0 };
+      net.nodes.push(ng); addEdge(node,ng,2,rel); added++;
+    }
+  reheat(0.7);
+  flash(added?`+${added} related words`:'No new links found');
+}
+
+async function addGhost(id){
+  if(!net) return;
+  const node=net.nodes.find(n=>n.id===id); if(!node||!node.ghost) return;
+  flash('Adding…');
+  let card=DB.cards.find(c=>c.w===node.w);
+  if(!card){ const r=await lookupDef(node.w); if(!net) return;
+    card=seedToCard({w:node.w, def:r.def, pos:r.pos}); DB.cards.push(card); save(DB); }
+  node.ghost=false; node.c=card; node.rel=undefined;
+  node.defT=new Set(netToks(card.def+' '+card.pos)); node.rootT=new Set();
+  renderStats(); netSelect(node);       // panel refreshes as a real, studyable word
+  flash('Added ✓');
 }
 
 // --- pointer interaction (drag / pan / pinch / tap) ---
