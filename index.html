@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="theme-color" content="#4f46e5" />
+<title>Vokab — learn words by their links</title>
+<style>
+  :root{
+    --bg:#0f1220; --card:#1a1f35; --card2:#232a45; --ink:#eef1ff; --muted:#9aa3c7;
+    --accent:#7c83ff; --good:#34d399; --easy:#22d3ee; --again:#fb7185; --line:#2c3358;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .app{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
+  header{
+    padding:16px 18px 10px;display:flex;align-items:center;justify-content:space-between;
+    position:sticky;top:0;background:linear-gradient(var(--bg),rgba(15,18,32,.85));backdrop-filter:blur(6px);z-index:5;
+  }
+  header h1{font-size:20px;margin:0;letter-spacing:.5px}
+  header h1 span{color:var(--accent)}
+  .stats{font-size:12px;color:var(--muted);text-align:right;line-height:1.5}
+  main{flex:1;padding:8px 16px 90px}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:22px;margin-bottom:16px;box-shadow:0 10px 30px rgba(0,0,0,.25);
+  }
+  .word{font-size:34px;font-weight:700;letter-spacing:.3px}
+  .pos{font-size:13px;color:var(--muted);font-style:italic;margin-top:2px}
+  .pron{font-size:14px;color:var(--accent);margin-top:4px;cursor:pointer;display:inline-block}
+  .def{margin-top:14px;font-size:17px;line-height:1.5}
+  .hidden{display:none}
+
+  .reveal-hint{margin-top:18px;color:var(--muted);font-size:14px;text-align:center}
+
+  .web{margin-top:18px}
+  .web h3{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:14px 0 8px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{
+    background:var(--card2);border:1px solid var(--line);color:var(--ink);
+    padding:6px 11px;border-radius:999px;font-size:13px;cursor:pointer;
+  }
+  .chip.syn{border-color:#3b6}
+  .chip.ant{border-color:#b55}
+  .chip.col{border-color:#46c}
+  .chip:active{transform:scale(.96)}
+  .root{background:var(--card2);border:1px dashed var(--accent);border-radius:12px;padding:10px 12px;margin-top:6px;font-size:14px;line-height:1.5}
+  .root b{color:var(--accent)}
+
+  .practice{margin-top:18px}
+  .practice textarea{
+    width:100%;min-height:70px;background:var(--bg);color:var(--ink);
+    border:1px solid var(--line);border-radius:12px;padding:10px;font-size:15px;resize:vertical;font-family:inherit;
+  }
+  .row{display:flex;gap:8px;margin-top:10px}
+  button.act{
+    flex:1;border:none;border-radius:12px;padding:13px 0;font-size:15px;font-weight:600;color:#0c1024;cursor:pointer;
+  }
+  .b-again{background:var(--again)} .b-good{background:var(--good)} .b-easy{background:var(--easy)}
+  .b-ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
+  .b-show{background:var(--accent);color:#0c1024}
+
+  .small{font-size:12px;color:var(--muted)}
+  .loading{color:var(--muted);font-size:13px}
+
+  .done{text-align:center;padding:50px 20px}
+  .done .big{font-size:46px}
+  .done p{color:var(--muted)}
+
+  nav{
+    position:fixed;left:0;right:0;bottom:0;max-width:520px;margin:0 auto;
+    display:flex;background:var(--card);border-top:1px solid var(--line);
+  }
+  nav button{
+    flex:1;background:none;border:none;color:var(--muted);padding:12px 0 14px;font-size:12px;cursor:pointer;
+  }
+  nav button.on{color:var(--accent)}
+  nav button .ic{display:block;font-size:20px;margin-bottom:2px}
+
+  .listitem{display:flex;justify-content:space-between;align-items:center;padding:12px 4px;border-bottom:1px solid var(--line)}
+  .listitem .due{font-size:12px;color:var(--muted)}
+  .addbar{display:flex;gap:8px;margin:6px 0 14px}
+  .addbar input{flex:1;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:11px;font-size:15px}
+  .addbar button{background:var(--accent);color:#0c1024;border:none;border-radius:10px;padding:0 16px;font-weight:600;cursor:pointer}
+  .tag{font-size:11px;padding:2px 7px;border-radius:6px;background:var(--card2);color:var(--muted);margin-left:6px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Vo<span>kab</span></h1>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <main id="main"></main>
+
+  <nav>
+    <button id="nav-study" class="on" onclick="go('study')"><span class="ic">🎯</span>Study</button>
+    <button id="nav-browse" onclick="go('browse')"><span class="ic">📚</span>Words</button>
+    <button id="nav-add" onclick="go('add')"><span class="ic">➕</span>Add</button>
+  </nav>
+</div>
+
+<script>
+/* ----------------------------------------------------------
+   Vokab — single-file vocab trainer (SAT + Thai A-Level English)
+   Method: links (synonyms/antonyms/collocations/roots)
+           + active recall + spaced repetition + your own sentences
+   Storage: localStorage (fully on-device)
+   Online bonus: Datamuse API for the live "word web" (free, no key)
+-----------------------------------------------------------*/
+
+// ---------- seed deck (edit / add your own in the Add tab) ----------
+const SEED = [
+  {w:"benevolent", pos:"adj", def:"kind, generous, wanting to do good for others", root:"Latin <b>bene-</b> = good (→ benefit, benefactor, benediction)"},
+  {w:"candid", pos:"adj", def:"honest and direct; saying what you really think", root:"Latin <b>candidus</b> = white, pure (→ candidate, candour)"},
+  {w:"diligent", pos:"adj", def:"hard-working and careful in your effort", root:"Latin <b>diligere</b> = to value/take care"},
+  {w:"ephemeral", pos:"adj", def:"lasting a very short time", root:"Greek <b>ephemeros</b> = lasting a day"},
+  {w:"gregarious", pos:"adj", def:"sociable; loving the company of others", root:"Latin <b>grex</b> = flock/herd (→ congregate, segregate)"},
+  {w:"meticulous", pos:"adj", def:"extremely careful about small details", root:"Latin <b>metus</b> = fear (→ overly careful)"},
+  {w:"pragmatic", pos:"adj", def:"practical; dealing with things sensibly, not idealistically", root:"Greek <b>pragma</b> = a deed/action"},
+  {w:"resilient", pos:"adj", def:"able to recover quickly from difficulty", root:"Latin <b>resilire</b> = to bounce back"},
+  {w:"scrutinize", pos:"verb", def:"to examine closely and critically", root:"Latin <b>scrutari</b> = to search/sort rubbish"},
+  {w:"ubiquitous", pos:"adj", def:"present everywhere at the same time", root:"Latin <b>ubique</b> = everywhere"},
+  {w:"alleviate", pos:"verb", def:"to make pain or a problem less severe", root:"Latin <b>levis</b> = light (→ elevate, levity)"},
+  {w:"cautious", pos:"adj", def:"careful to avoid danger or mistakes", root:"Latin <b>cavere</b> = to beware"},
+];
+
+// ---------- storage ----------
+const KEY="vokab.v1";
+function load(){
+  let s=localStorage.getItem(KEY);
+  if(s){ try{ return JSON.parse(s); }catch(e){} }
+  // first run: build cards from seed
+  const cards=SEED.map(seedToCard);
+  const db={cards, created:Date.now()};
+  save(db); return db;
+}
+function save(db){ localStorage.setItem(KEY, JSON.stringify(db)); }
+function seedToCard(s){
+  return {
+    id:cryptoId(), w:s.w, pos:s.pos||"", def:s.def||"", root:s.root||"",
+    sentence:"",                 // your own example sentence
+    // spaced-repetition state (SM-2 style)
+    ease:2.5, interval:0, reps:0, due:Date.now(), lapses:0
+  };
+}
+function cryptoId(){ return Math.random().toString(36).slice(2,10); }
+
+let DB = load();
+
+// ---------- spaced repetition (simplified SM-2 / FSRS-lite) ----------
+const DAY=86400000;
+function schedule(card, rating){ // rating: 'again' | 'good' | 'easy'
+  card.reps++;
+  if(rating==='again'){
+    card.lapses++; card.interval=0; card.ease=Math.max(1.3,card.ease-0.2);
+    card.due=Date.now()+ 60*1000;            // see again in ~1 min this session
+  } else if(rating==='good'){
+    if(card.interval===0) card.interval=1;
+    else if(card.interval===1) card.interval=3;
+    else card.interval=Math.round(card.interval*card.ease);
+    card.due=Date.now()+card.interval*DAY;
+  } else { // easy
+    card.ease+=0.15;
+    card.interval = card.interval===0 ? 4 : Math.round(card.interval*card.ease*1.3);
+    card.due=Date.now()+card.interval*DAY;
+  }
+  save(DB);
+}
+function dueCards(){ const now=Date.now(); return DB.cards.filter(c=>c.due<=now).sort((a,b)=>a.due-b.due); }
+
+// ---------- Datamuse word-web (free, no key, needs WiFi) ----------
+const webCache={};
+async function fetchWeb(word){
+  if(webCache[word]) return webCache[word];
+  const q=(rel)=>fetch(`https://api.datamuse.com/words?rel_${rel}=${encodeURIComponent(word)}&max=8`).then(r=>r.json()).catch(()=>[]);
+  try{
+    const [syn,ant,col]=await Promise.all([q('syn'),q('ant'),q('bga')]); // bga = words that frequently FOLLOW the word (collocations)
+    const out={
+      syn:syn.map(x=>x.word).slice(0,8),
+      ant:ant.map(x=>x.word).slice(0,8),
+      col:col.map(x=>x.word).slice(0,6)
+    };
+    webCache[word]=out; return out;
+  }catch(e){ return {syn:[],ant:[],col:[],offline:true}; }
+}
+
+// ---------- pronunciation (browser TTS, offline) ----------
+function speak(t){ try{ const u=new SpeechSynthesisUtterance(t); u.lang='en-US'; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){} }
+
+// ---------- views ----------
+let view='study';
+let revealed=false;
+let current=null;
+
+function go(v){ view=v; revealed=false;
+  ['study','browse','add'].forEach(n=>document.getElementById('nav-'+n).classList.toggle('on',n===v));
+  render();
+}
+function render(){
+  renderStats();
+  if(view==='study') return renderStudy();
+  if(view==='browse') return renderBrowse();
+  if(view==='add') return renderAdd();
+}
+function renderStats(){
+  const due=dueCards().length, total=DB.cards.length;
+  document.getElementById('stats').innerHTML=`${total} words<br><b style="color:var(--accent)">${due}</b> due now`;
+}
+
+function renderStudy(){
+  const m=document.getElementById('main');
+  const due=dueCards();
+  if(due.length===0){
+    m.innerHTML=`<div class="done"><div class="big">✅</div>
+      <h2>All caught up!</h2>
+      <p>No words due right now. Add more in the <b>Add</b> tab, or come back later — spaced repetition will bring words back right before you'd forget them.</p></div>`;
+    current=null; return;
+  }
+  current = due[0];
+  const c=current;
+  m.innerHTML=`
+    <div class="card">
+      <div class="word">${c.w}</div>
+      ${c.pos?`<div class="pos">${c.pos}</div>`:''}
+      <div class="pron" onclick="speak('${c.w}')">🔊 hear it</div>
+
+      <div id="answer" class="${revealed?'':'hidden'}">
+        <div class="def">${c.def||'<span class="small">no definition yet — add one in Words tab</span>'}</div>
+        ${c.root?`<div class="root">🌱 ${c.root}</div>`:''}
+        <div class="web" id="web"><div class="loading">loading word-web…</div></div>
+
+        <div class="practice">
+          <h3 style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">✍️ Use it in a sentence</h3>
+          <textarea id="sent" placeholder="Write your own sentence — this is what makes it stick for real conversation.">${c.sentence||''}</textarea>
+          <div class="row">
+            <button class="act b-ghost" onclick="saveSentence()">Save sentence</button>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:18px">
+          <button class="act b-again" onclick="rate('again')">Again</button>
+          <button class="act b-good" onclick="rate('good')">Good</button>
+          <button class="act b-easy" onclick="rate('easy')">Easy</button>
+        </div>
+      </div>
+
+      <div id="prompt" class="${revealed?'hidden':''}">
+        <div class="reveal-hint">Do you know what this word means?<br>Recall it first, then reveal.</div>
+        <div class="row" style="margin-top:14px">
+          <button class="act b-show" onclick="reveal()">Show answer</button>
+        </div>
+      </div>
+    </div>`;
+  if(revealed) loadWebInto(c.w);
+}
+function reveal(){ revealed=true; renderStudy(); }
+async function loadWebInto(word){
+  const el=document.getElementById('web'); if(!el) return;
+  const data=await fetchWeb(word);
+  const sec=(title,arr,cls)=> arr&&arr.length
+    ? `<h3>${title}</h3><div class="chips">${arr.map(x=>`<span class="chip ${cls}" onclick="speak('${x.replace(/'/g,"")}')">${x}</span>`).join('')}</div>` : '';
+  let html = sec('Synonyms',data.syn,'syn')+sec('Opposites',data.ant,'ant')+sec('Often followed by (collocations)',data.col,'col');
+  if(!html) html=`<div class="small">${data.offline?'Offline — connect to WiFi to load the word-web.':'No links found for this word.'}</div>`;
+  el.innerHTML=html;
+}
+function saveSentence(){ if(!current)return; const t=document.getElementById('sent').value.trim(); current.sentence=t; save(DB); flash('Saved ✓'); }
+function rate(r){ if(!current)return; const t=document.getElementById('sent'); if(t) current.sentence=t.value.trim(); schedule(current,r); revealed=false; renderStudy(); renderStats(); }
+
+function renderBrowse(){
+  const m=document.getElementById('main');
+  const cards=[...DB.cards].sort((a,b)=>a.w.localeCompare(b.w));
+  m.innerHTML = `<div style="margin:6px 0 12px" class="small">${cards.length} words. Tap a word to hear it.</div>` +
+    cards.map(c=>{
+      const days=Math.max(0,Math.round((c.due-Date.now())/DAY));
+      const dueTxt = c.due<=Date.now()?'<b style="color:var(--accent)">due</b>':`in ${days}d`;
+      return `<div class="listitem">
+        <div><span style="cursor:pointer" onclick="speak('${c.w}')">${c.w}</span>
+          <span class="tag">${c.reps} reps</span></div>
+        <div class="due">${dueTxt} · <span style="cursor:pointer;color:var(--again)" onclick="del('${c.id}')">✕</span></div>
+      </div>`;
+    }).join('');
+}
+function del(id){ DB.cards=DB.cards.filter(c=>c.id!==id); save(DB); render(); }
+
+function renderAdd(){
+  const m=document.getElementById('main');
+  m.innerHTML=`
+    <div class="card">
+      <h3 style="margin-top:0">Add a word</h3>
+      <div class="addbar"><input id="nw" placeholder="word (e.g. ostentatious)" /></div>
+      <input id="nd" class="addbar-in" style="width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:11px;font-size:15px" placeholder="definition (optional — leave blank to look up online)"/>
+      <div class="row"><button class="act b-show" onclick="addWord()">Add word</button></div>
+      <p class="small" style="margin-top:14px">Tip: if you leave the definition blank and you're on WiFi, Vokab will try to fetch one for you automatically.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Bulk add</h3>
+      <textarea id="bulk" style="width:100%;min-height:90px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;font-family:inherit" placeholder="One word per line. Paste a whole SAT list here."></textarea>
+      <div class="row"><button class="act b-ghost" onclick="bulkAdd()">Add all</button></div>
+    </div>`;
+}
+async function lookupDef(word){
+  try{
+    const r=await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`).then(r=>r.json());
+    const m=r&&r[0]&&r[0].meanings&&r[0].meanings[0];
+    if(m){ return {pos:m.partOfSpeech||'', def:(m.definitions[0]&&m.definitions[0].definition)||''}; }
+  }catch(e){}
+  return {pos:'',def:''};
+}
+async function addWord(){
+  const w=document.getElementById('nw').value.trim().toLowerCase();
+  let d=document.getElementById('nd').value.trim();
+  if(!w) return;
+  let pos='';
+  if(!d){ const r=await lookupDef(w); d=r.def; pos=r.pos; }
+  DB.cards.push(Object.assign(seedToCard({w,def:d,pos}),{}));
+  save(DB); flash('Added ✓'); go('browse');
+}
+async function bulkAdd(){
+  const lines=document.getElementById('bulk').value.split('\n').map(x=>x.trim().toLowerCase()).filter(Boolean);
+  for(const w of lines){
+    if(DB.cards.some(c=>c.w===w)) continue;
+    const r=await lookupDef(w);
+    DB.cards.push(seedToCard({w,def:r.def,pos:r.pos}));
+  }
+  save(DB); flash(`Added ${lines.length} ✓`); go('browse');
+}
+
+function flash(msg){
+  let f=document.createElement('div');
+  f.textContent=msg;
+  f.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--accent);color:#0c1024;padding:8px 16px;border-radius:999px;font-weight:600;z-index:99';
+  document.body.appendChild(f); setTimeout(()=>f.remove(),1200);
+}
+
+render();
+</script>
+</body>
+</html>
