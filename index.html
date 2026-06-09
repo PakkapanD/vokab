@@ -132,6 +132,90 @@ const SEED = [
   {w:"cautious", pos:"adj", def:"careful to avoid danger or mistakes", root:"Latin <b>cavere</b> = to beware"},
 ];
 
+// ---------- word packs (tap to load in the Add tab) ----------
+const PACKS = {
+"SAT Core": [
+ {w:"aberration",pos:"n",def:"a departure from what is normal or expected",root:"Latin <b>aberrare</b> = to wander away"},
+ {w:"abstain",pos:"verb",def:"to choose not to do something, especially something enjoyable",root:"Latin <b>abs-</b> (away) + <b>tenere</b> (to hold)"},
+ {w:"adversity",pos:"n",def:"hardship; a difficult or unlucky situation",root:"Latin <b>adversus</b> = turned against"},
+ {w:"aesthetic",pos:"adj",def:"concerned with beauty or the appreciation of beauty",root:"Greek <b>aisthesis</b> = perception"},
+ {w:"amiable",pos:"adj",def:"friendly and pleasant; easy to like",root:"Latin <b>amare</b> = to love (→ amicable, amity)"},
+ {w:"ambiguous",pos:"adj",def:"open to more than one interpretation; unclear",root:"Latin <b>ambi-</b> = both ways"},
+ {w:"apathy",pos:"n",def:"lack of interest, enthusiasm, or concern",root:"Greek <b>a-</b> (without) + <b>pathos</b> (feeling)"},
+ {w:"arduous",pos:"adj",def:"requiring great effort; difficult and tiring",root:"Latin <b>arduus</b> = steep, hard"},
+ {w:"articulate",pos:"adj",def:"able to express ideas clearly and fluently",root:"Latin <b>articulus</b> = a joint (→ clearly jointed speech)"},
+ {w:"austere",pos:"adj",def:"strict and plain; without comfort or decoration",root:"Greek <b>austeros</b> = harsh"},
+ {w:"belligerent",pos:"adj",def:"hostile and aggressive; eager to fight",root:"Latin <b>bellum</b> = war (→ rebel, belligerence)"},
+ {w:"benign",pos:"adj",def:"gentle, kind, and harmless",root:"Latin <b>bene</b> = well/good"},
+ {w:"brevity",pos:"n",def:"shortness; concise expression",root:"Latin <b>brevis</b> = short (→ abbreviate, brief)"},
+ {w:"cacophony",pos:"n",def:"a harsh, unpleasant mixture of sounds",root:"Greek <b>kakos</b> (bad) + <b>phone</b> (sound)"},
+ {w:"capricious",pos:"adj",def:"given to sudden changes of mood; unpredictable",root:"Italian <b>capriccio</b> = a sudden whim"},
+ {w:"censure",pos:"verb",def:"to express strong, formal disapproval of",root:"Latin <b>censere</b> = to assess/judge"},
+ {w:"coherent",pos:"adj",def:"logical and clearly connected",root:"Latin <b>co-</b> + <b>haerere</b> (to stick together)"},
+ {w:"complacent",pos:"adj",def:"smugly satisfied and unaware of dangers",root:"Latin <b>complacere</b> = to please greatly"},
+ {w:"conciliatory",pos:"adj",def:"intended to make peace or win goodwill",root:"Latin <b>conciliare</b> = to bring together"},
+ {w:"conspicuous",pos:"adj",def:"clearly visible; standing out and attracting notice",root:"Latin <b>conspicere</b> = to look at"},
+ {w:"cryptic",pos:"adj",def:"mysterious; having a hidden meaning",root:"Greek <b>kryptos</b> = hidden (→ crypt, encrypt)"},
+ {w:"deference",pos:"n",def:"respectful yielding to another's wishes or opinion",root:"Latin <b>deferre</b> = to carry/yield"},
+ {w:"deride",pos:"verb",def:"to mock or ridicule scornfully",root:"Latin <b>de-</b> + <b>ridere</b> (to laugh at)"},
+ {w:"despondent",pos:"adj",def:"in low spirits; deeply discouraged",root:"Latin <b>despondere</b> = to give up"},
+ {w:"deter",pos:"verb",def:"to discourage someone from acting through fear or doubt",root:"Latin <b>deterrere</b> = to frighten off"},
+ {w:"didactic",pos:"adj",def:"intended to teach or instruct (sometimes too much)",root:"Greek <b>didaktikos</b> = apt at teaching"},
+ {w:"diffident",pos:"adj",def:"shy and lacking self-confidence",root:"Latin <b>diffidere</b> = to distrust"},
+ {w:"digress",pos:"verb",def:"to stray from the main subject in speech or writing",root:"Latin <b>di-</b> (apart) + <b>gradi</b> (to step)"},
+ {w:"disparage",pos:"verb",def:"to belittle; to speak of as worthless",root:"Old French <b>desparagier</b> = to lower in rank"},
+ {w:"dogmatic",pos:"adj",def:"asserting opinions as if they were undeniable facts",root:"Greek <b>dogma</b> = opinion/belief"},
+ {w:"eloquent",pos:"adj",def:"fluent and persuasive in speaking or writing",root:"Latin <b>eloqui</b> = to speak out"},
+ {w:"empirical",pos:"adj",def:"based on observation or experiment, not theory",root:"Greek <b>empeiria</b> = experience"},
+ {w:"enervate",pos:"verb",def:"to weaken; to drain of energy",root:"Latin <b>enervare</b> = to remove the sinews"},
+ {w:"equivocal",pos:"adj",def:"ambiguous; deliberately vague to mislead",root:"Latin <b>aequi-</b> (equal) + <b>vox</b> (voice)"},
+ {w:"erudite",pos:"adj",def:"having or showing deep, scholarly knowledge",root:"Latin <b>eruditus</b> = instructed"},
+ {w:"exacerbate",pos:"verb",def:"to make a problem or bad situation worse",root:"Latin <b>acerbus</b> = harsh, bitter"},
+ {w:"exemplary",pos:"adj",def:"serving as an outstanding model; admirable",root:"Latin <b>exemplum</b> = example"},
+ {w:"extol",pos:"verb",def:"to praise highly and enthusiastically",root:"Latin <b>extollere</b> = to lift up"},
+ {w:"fastidious",pos:"adj",def:"very attentive to detail; hard to please",root:"Latin <b>fastidium</b> = loathing"},
+ {w:"frugal",pos:"adj",def:"careful with money or resources; thrifty",root:"Latin <b>frugalis</b> = economical"},
+ {w:"garrulous",pos:"adj",def:"excessively talkative, especially about trivial things",root:"Latin <b>garrire</b> = to chatter"},
+ {w:"hackneyed",pos:"adj",def:"overused and therefore unoriginal; clichéd",root:"from <b>hackney</b> = a horse for hire (worn out from overuse)"},
+ {w:"impartial",pos:"adj",def:"treating all sides fairly; unbiased",root:"Latin <b>im-</b> (not) + <b>partial</b>"},
+ {w:"impetuous",pos:"adj",def:"acting quickly and rashly, without thought",root:"Latin <b>impetus</b> = attack, force"},
+ {w:"inadvertent",pos:"adj",def:"not intended; accidental",root:"Latin <b>in-</b> (not) + <b>advertere</b> (to turn toward)"},
+ {w:"incessant",pos:"adj",def:"continuing without pause or interruption",root:"Latin <b>in-</b> (not) + <b>cessare</b> (to stop)"},
+ {w:"ingenuous",pos:"adj",def:"innocent and sincere; trustingly naive",root:"Latin <b>ingenuus</b> = frank, native-born"},
+ {w:"innocuous",pos:"adj",def:"harmless; unlikely to cause offense or injury",root:"Latin <b>in-</b> (not) + <b>nocere</b> (to harm)"},
+ {w:"insipid",pos:"adj",def:"lacking flavor, interest, or excitement; dull",root:"Latin <b>in-</b> (not) + <b>sapidus</b> (tasty)"},
+ {w:"intrepid",pos:"adj",def:"fearless; boldly brave",root:"Latin <b>in-</b> (not) + <b>trepidus</b> (alarmed)"},
+ {w:"juxtapose",pos:"verb",def:"to place side by side for comparison or contrast",root:"Latin <b>juxta</b> (beside) + <b>pose</b> (place)"},
+ {w:"laconic",pos:"adj",def:"using very few words; terse",root:"from <b>Laconia</b> (Sparta), famed for blunt speech"},
+ {w:"lethargic",pos:"adj",def:"sluggish; lacking energy and alertness",root:"Greek <b>lethargia</b> = drowsiness"},
+ {w:"lucid",pos:"adj",def:"clear and easy to understand; mentally clear",root:"Latin <b>lucidus</b> = bright, full of light"},
+ {w:"malevolent",pos:"adj",def:"wishing harm to others; spiteful",root:"Latin <b>male</b> (badly) + <b>velle</b> (to wish)"},
+ {w:"mitigate",pos:"verb",def:"to make less severe, serious, or painful",root:"Latin <b>mitigare</b> = to soften"},
+ {w:"mundane",pos:"adj",def:"ordinary, dull, and lacking interest",root:"Latin <b>mundus</b> = world (worldly = ordinary)"},
+ {w:"nonchalant",pos:"adj",def:"casually calm and unconcerned",root:"French <b>nonchaloir</b> = to lack warmth/care"},
+ {w:"obscure",pos:"adj",def:"unclear, hard to understand, or little known",root:"Latin <b>obscurus</b> = dark, covered"},
+ {w:"obsolete",pos:"adj",def:"out of date; no longer in use",root:"Latin <b>obsolescere</b> = to fall into disuse"},
+ {w:"ostentatious",pos:"adj",def:"showy; designed to impress or attract notice",root:"Latin <b>ostentare</b> = to display"},
+ {w:"paramount",pos:"adj",def:"more important than anything else; supreme",root:"Anglo-French <b>par amont</b> = above"},
+ {w:"perfunctory",pos:"adj",def:"done routinely, with little care or interest",root:"Latin <b>perfunctus</b> = having got through (a duty)"},
+ {w:"pervasive",pos:"adj",def:"spreading widely through every part",root:"Latin <b>pervadere</b> = to go through"},
+ {w:"placate",pos:"verb",def:"to make someone less angry; to soothe",root:"Latin <b>placare</b> = to calm"},
+ {w:"plausible",pos:"adj",def:"seeming reasonable or believable",root:"Latin <b>plaudere</b> = to applaud/approve"},
+ {w:"precarious",pos:"adj",def:"dangerously unstable or uncertain",root:"Latin <b>precarius</b> = obtained by begging (uncertain)"},
+ {w:"prudent",pos:"adj",def:"acting with care and good judgment for the future",root:"Latin <b>prudens</b> = foreseeing, wise"},
+ {w:"quell",pos:"verb",def:"to put an end to, usually by force; to suppress",root:"Old English <b>cwellan</b> = to kill, subdue"},
+ {w:"rancor",pos:"n",def:"bitter, long-lasting resentment",root:"Latin <b>rancere</b> = to stink (bitterness that festers)"},
+ {w:"reticent",pos:"adj",def:"reserved; reluctant to speak or reveal feelings",root:"Latin <b>reticere</b> = to keep silent"},
+ {w:"spurious",pos:"adj",def:"false or fake; not genuine",root:"Latin <b>spurius</b> = illegitimate"},
+ {w:"squander",pos:"verb",def:"to waste recklessly, especially money or chances",root:"likely imitative of careless scattering"},
+ {w:"superfluous",pos:"adj",def:"more than is needed; unnecessary",root:"Latin <b>super</b> (over) + <b>fluere</b> (to flow)"},
+ {w:"tenacious",pos:"adj",def:"holding firmly; persistent and determined",root:"Latin <b>tenere</b> = to hold (→ retain, tenant)"},
+ {w:"trivial",pos:"adj",def:"of little value or importance",root:"Latin <b>trivialis</b> = commonplace (found at every crossroad)"},
+ {w:"vindicate",pos:"verb",def:"to clear of blame or suspicion; to justify",root:"Latin <b>vindicare</b> = to claim, avenge"},
+ {w:"wary",pos:"adj",def:"cautious and watchful of danger or trouble",root:"Old English <b>wær</b> = aware, careful"}
+]
+};
+
 // ---------- storage ----------
 const KEY="vokab.v1";
 function load(){
@@ -154,6 +238,11 @@ function seedToCard(s){
 function cryptoId(){ return Math.random().toString(36).slice(2,10); }
 
 let DB = load();
+
+// ---------- settings (Gemini key etc, stays on this device) ----------
+const SKEY="vokab.settings";
+function getSettings(){ try{ return JSON.parse(localStorage.getItem(SKEY))||{}; }catch(e){ return {}; } }
+function setSettings(o){ localStorage.setItem(SKEY, JSON.stringify(o)); }
 
 // ---------- spaced repetition (simplified SM-2 / FSRS-lite) ----------
 const DAY=86400000;
@@ -241,8 +330,10 @@ function renderStudy(){
           <h3 style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">✍️ Use it in a sentence</h3>
           <textarea id="sent" placeholder="Write your own sentence — this is what makes it stick for real conversation.">${c.sentence||''}</textarea>
           <div class="row">
-            <button class="act b-ghost" onclick="saveSentence()">Save sentence</button>
+            <button class="act b-ghost" onclick="saveSentence()">Save</button>
+            <button class="act b-show" onclick="gradeSentence()">🤖 Check (AI)</button>
           </div>
+          <div id="aiout" style="margin-top:10px"></div>
         </div>
 
         <div class="row" style="margin-top:18px">
@@ -301,9 +392,24 @@ function renderAdd(){
       <p class="small" style="margin-top:14px">Tip: if you leave the definition blank and you're on WiFi, Vokab will try to fetch one for you automatically.</p>
     </div>
     <div class="card">
+      <h3 style="margin-top:0">📦 Word packs</h3>
+      ${Object.keys(PACKS).map(name=>`<div class="listitem">
+          <div>${name}<span class="tag">${PACKS[name].length} words</span></div>
+          <button class="addbar" style="background:var(--accent);color:#0c1024;border:none;border-radius:10px;padding:6px 14px;font-weight:600;cursor:pointer;margin:0" onclick="loadPack('${name}')">Load</button>
+        </div>`).join('')}
+      <p class="small" style="margin-top:10px">Loading a pack adds its words (skips any you already have), each with definition + root.</p>
+    </div>
+    <div class="card">
       <h3 style="margin-top:0">Bulk add</h3>
       <textarea id="bulk" style="width:100%;min-height:90px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;font-family:inherit" placeholder="One word per line. Paste a whole SAT list here."></textarea>
       <div class="row"><button class="act b-ghost" onclick="bulkAdd()">Add all</button></div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">🤖 AI settings (optional)</h3>
+      <p class="small" style="margin-top:0">Paste a <b>free</b> Google Gemini API key to grade the sentences you write. Get one at <b>aistudio.google.com/apikey</b>. It is stored only on this device.</p>
+      <input id="gkey" style="width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:11px;font-size:15px;margin-bottom:8px" placeholder="Gemini API key" value="${(getSettings().geminiKey||'').replace(/"/g,'')}"/>
+      <input id="gmodel" style="width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:11px;font-size:15px" placeholder="model (default: gemini-2.0-flash)" value="${getSettings().geminiModel||'gemini-2.0-flash'}"/>
+      <div class="row"><button class="act b-show" onclick="saveGemini()">Save AI settings</button></div>
     </div>`;
 }
 async function lookupDef(word){
@@ -331,6 +437,39 @@ async function bulkAdd(){
     DB.cards.push(seedToCard({w,def:r.def,pos:r.pos}));
   }
   save(DB); flash(`Added ${lines.length} ✓`); go('browse');
+}
+
+function loadPack(name){
+  const pack=PACKS[name]||[]; let added=0;
+  for(const e of pack){ if(DB.cards.some(c=>c.w===e.w)) continue; DB.cards.push(seedToCard(e)); added++; }
+  save(DB); flash(`Added ${added} new words ✓`); go('browse');
+}
+
+function saveGemini(){
+  const o=getSettings();
+  o.geminiKey=document.getElementById('gkey').value.trim();
+  o.geminiModel=(document.getElementById('gmodel').value.trim())||'gemini-2.0-flash';
+  setSettings(o); flash('AI settings saved ✓');
+}
+
+async function gradeSentence(){
+  const s=getSettings();
+  const ta=document.getElementById('sent'); const out=document.getElementById('aiout');
+  const sent=ta?ta.value.trim():'';
+  if(!s.geminiKey){ out.innerHTML='<span class="small">Add your free Gemini key in the <b>Add</b> tab → AI settings first.</span>'; return; }
+  if(!sent){ out.innerHTML='<span class="small">Write a sentence first, then tap Check.</span>'; return; }
+  out.innerHTML='<span class="loading">🤖 Checking your sentence…</span>';
+  const model=s.geminiModel||'gemini-2.0-flash';
+  const prompt=`You are a friendly English tutor. A student learning the word "${current.w}" (meaning: ${current.def}) wrote this sentence:\n"${sent}"\nIn under 50 words: (1) Does it use "${current.w}" correctly and sound natural to a native speaker? (2) If it could be better, give ONE improved, natural version. Be concise and encouraging.`;
+  try{
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(s.geminiKey)}`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
+    }).then(r=>r.json());
+    if(r.error){ out.innerHTML=`<span class="small" style="color:var(--again)">Gemini error: ${r.error.message}. (Try a different model name in AI settings.)</span>`; return; }
+    const txt=(r.candidates&&r.candidates[0]&&r.candidates[0].content&&r.candidates[0].content.parts&&r.candidates[0].content.parts[0].text)||'No response.';
+    out.innerHTML=`<div class="root" style="border-style:solid;border-color:var(--easy)">🤖 ${txt.replace(/\n/g,'<br>')}</div>`;
+  }catch(e){ out.innerHTML='<span class="small" style="color:var(--again)">Network error — check your WiFi.</span>'; }
 }
 
 function flash(msg){
