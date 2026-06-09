@@ -89,6 +89,25 @@
   .addbar input{flex:1;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:11px;font-size:15px}
   .addbar button{background:var(--accent);color:#0c1024;border:none;border-radius:10px;padding:0 16px;font-weight:600;cursor:pointer}
   .tag{font-size:11px;padding:2px 7px;border-radius:6px;background:var(--card2);color:var(--muted);margin-left:6px}
+
+  /* ----- word-web graph (Web tab) ----- */
+  .webwrap{position:relative;margin:-8px -16px 0;height:calc(100vh - 168px);min-height:360px;overflow:hidden;
+    background:radial-gradient(circle at 50% 38%, #151b33, var(--bg));border-bottom:1px solid var(--line)}
+  canvas#net{display:block;width:100%;height:100%;touch-action:none}
+  .webhint{position:absolute;bottom:8px;left:0;right:0;text-align:center;pointer-events:none;color:var(--muted);font-size:11px}
+  .legend{position:absolute;top:8px;left:10px;font-size:11px;color:var(--muted);line-height:1.8;pointer-events:none}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
+  .netbtns{position:absolute;top:8px;right:10px;display:flex;flex-direction:column;gap:6px}
+  .netbtns button{width:36px;height:36px;border-radius:10px;background:var(--card2);color:var(--ink);
+    border:1px solid var(--line);font-size:18px;cursor:pointer;line-height:1}
+  .netpanel{position:absolute;left:10px;right:10px;bottom:26px;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:12px 14px 14px;box-shadow:0 12px 34px rgba(0,0,0,.5)}
+  .netpanel .w{font-size:21px;font-weight:700}
+  .netpanel .p{font-size:12px;color:var(--muted);font-style:italic}
+  .netpanel .d{font-size:14px;margin-top:5px;line-height:1.45}
+  .netpanel .x{position:absolute;top:7px;right:13px;cursor:pointer;color:var(--muted);font-size:18px}
+  .netpanel .go{margin-top:11px;background:var(--accent);color:#0c1024;border:none;border-radius:10px;
+    padding:8px 15px;font-weight:600;cursor:pointer}
 </style>
 </head>
 <body>
@@ -102,6 +121,7 @@
 
   <nav>
     <button id="nav-study" class="on" onclick="go('study')"><span class="ic">🎯</span>Study</button>
+    <button id="nav-web" onclick="go('web')"><span class="ic">🕸️</span>Web</button>
     <button id="nav-browse" onclick="go('browse')"><span class="ic">📚</span>Words</button>
     <button id="nav-add" onclick="go('add')"><span class="ic">➕</span>Add</button>
   </nav>
@@ -239,11 +259,6 @@ function cryptoId(){ return Math.random().toString(36).slice(2,10); }
 
 let DB = load();
 
-// ---------- settings (Gemini key etc, stays on this device) ----------
-const SKEY="vokab.settings";
-function getSettings(){ try{ return JSON.parse(localStorage.getItem(SKEY))||{}; }catch(e){ return {}; } }
-function setSettings(o){ localStorage.setItem(SKEY, JSON.stringify(o)); }
-
 // ---------- spaced repetition (simplified SM-2 / FSRS-lite) ----------
 const DAY=86400000;
 function schedule(card, rating){ // rating: 'again' | 'good' | 'easy'
@@ -289,13 +304,14 @@ let view='study';
 let revealed=false;
 let current=null;
 
-function go(v){ view=v; revealed=false;
-  ['study','browse','add'].forEach(n=>document.getElementById('nav-'+n).classList.toggle('on',n===v));
+function go(v){ stopNet(); view=v; revealed=false;
+  ['study','web','browse','add'].forEach(n=>document.getElementById('nav-'+n).classList.toggle('on',n===v));
   render();
 }
 function render(){
   renderStats();
   if(view==='study') return renderStudy();
+  if(view==='web') return renderWeb();
   if(view==='browse') return renderBrowse();
   if(view==='add') return renderAdd();
 }
@@ -330,10 +346,8 @@ function renderStudy(){
           <h3 style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">✍️ Use it in a sentence</h3>
           <textarea id="sent" placeholder="Write your own sentence — this is what makes it stick for real conversation.">${c.sentence||''}</textarea>
           <div class="row">
-            <button class="act b-ghost" onclick="saveSentence()">Save</button>
-            <button class="act b-show" onclick="gradeSentence()">🤖 Check (AI)</button>
+            <button class="act b-ghost" onclick="saveSentence()">Save sentence</button>
           </div>
-          <div id="aiout" style="margin-top:10px"></div>
         </div>
 
         <div class="row" style="margin-top:18px">
@@ -404,13 +418,7 @@ function renderAdd(){
       <textarea id="bulk" style="width:100%;min-height:90px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;font-family:inherit" placeholder="One word per line. Paste a whole SAT list here."></textarea>
       <div class="row"><button class="act b-ghost" onclick="bulkAdd()">Add all</button></div>
     </div>
-    <div class="card">
-      <h3 style="margin-top:0">🤖 AI settings (optional)</h3>
-      <p class="small" style="margin-top:0">Paste a <b>free</b> Google Gemini API key to grade the sentences you write. Get one at <b>aistudio.google.com/apikey</b>. It is stored only on this device.</p>
-      <input id="gkey" style="width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:11px;font-size:15px;margin-bottom:8px" placeholder="Gemini API key" value="${(getSettings().geminiKey||'').replace(/"/g,'')}"/>
-      <input id="gmodel" style="width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:11px;font-size:15px" placeholder="model (default: gemini-2.0-flash)" value="${getSettings().geminiModel||'gemini-2.0-flash'}"/>
-      <div class="row"><button class="act b-show" onclick="saveGemini()">Save AI settings</button></div>
-    </div>`;
+    `;
 }
 async function lookupDef(word){
   try{
@@ -445,39 +453,294 @@ function loadPack(name){
   save(DB); flash(`Added ${added} new words ✓`); go('browse');
 }
 
-function saveGemini(){
-  const o=getSettings();
-  o.geminiKey=document.getElementById('gkey').value.trim();
-  o.geminiModel=(document.getElementById('gmodel').value.trim())||'gemini-2.0-flash';
-  setSettings(o); flash('AI settings saved ✓');
-}
-
-async function gradeSentence(){
-  const s=getSettings();
-  const ta=document.getElementById('sent'); const out=document.getElementById('aiout');
-  const sent=ta?ta.value.trim():'';
-  if(!s.geminiKey){ out.innerHTML='<span class="small">Add your free Gemini key in the <b>Add</b> tab → AI settings first.</span>'; return; }
-  if(!sent){ out.innerHTML='<span class="small">Write a sentence first, then tap Check.</span>'; return; }
-  out.innerHTML='<span class="loading">🤖 Checking your sentence…</span>';
-  const model=s.geminiModel||'gemini-2.0-flash';
-  const prompt=`You are a friendly English tutor. A student learning the word "${current.w}" (meaning: ${current.def}) wrote this sentence:\n"${sent}"\nIn under 50 words: (1) Does it use "${current.w}" correctly and sound natural to a native speaker? (2) If it could be better, give ONE improved, natural version. Be concise and encouraging.`;
-  try{
-    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(s.geminiKey)}`,{
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
-    }).then(r=>r.json());
-    if(r.error){ out.innerHTML=`<span class="small" style="color:var(--again)">Gemini error: ${r.error.message}. (Try a different model name in AI settings.)</span>`; return; }
-    const txt=(r.candidates&&r.candidates[0]&&r.candidates[0].content&&r.candidates[0].content.parts&&r.candidates[0].content.parts[0].text)||'No response.';
-    out.innerHTML=`<div class="root" style="border-style:solid;border-color:var(--easy)">🤖 ${txt.replace(/\n/g,'<br>')}</div>`;
-  }catch(e){ out.innerHTML='<span class="small" style="color:var(--again)">Network error — check your WiFi.</span>'; }
-}
-
 function flash(msg){
   let f=document.createElement('div');
   f.textContent=msg;
   f.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--accent);color:#0c1024;padding:8px 16px;border-radius:999px;font-weight:600;z-index:99';
   document.body.appendChild(f); setTimeout(()=>f.remove(),1200);
 }
+
+/* ==========================================================
+   Word-web graph  — every word a node, linked by how related
+   their meanings are (shared definition words + shared roots).
+   Pure canvas + a tiny force simulation. Offline, no deps.
+==========================================================*/
+
+// words too common to count as a "link" between two definitions
+const STOP=new Set(("a an the to of or and but in on for with within without not no nor by as at be is are was were "+
+ "that which who whom whose this these those it its their them they you your our we us i me my "+
+ "very often especially usually etc more most less than then way ways thing things make makes made making "+
+ "do does done doing person persons people someone something somebody being having show shows showing "+
+ "able like such over under into onto from out off up down about after before when while where what how "+
+ "all any each every other others another only also just so too can may might will would should could "+
+ "one two get gets got give given gives take taken takes put puts used use uses using kind kinds sort "+
+ "type types full lack lacks lacking quality state states act acts action actions manner toward towards "+
+ "latin greek french italian spanish german old english anglo norse imitative likely probably perhaps "+
+ "origin root word words family meaning real really often himself herself oneself").split(/\s+/));
+
+function netToks(str){               // -> array of meaningful tokens
+  if(!str) return [];
+  const clean=str.replace(/<[^>]*>/g,' ').replace(/[^a-zA-Z\s-]/g,' ').toLowerCase();
+  return clean.split(/[\s-]+/).filter(t=>t.length>=4 && !STOP.has(t));
+}
+
+function buildGraph(){
+  const cards=DB.cards;
+  const nodes=cards.map((c,i)=>({
+    id:c.id, i, w:c.w, c,
+    defT:new Set(netToks(c.def+' '+c.pos)),
+    rootT:new Set(netToks(c.root)),
+    x:0,y:0,vx:0,vy:0,fx:0,fy:0
+  }));
+  // initial layout: a circle, so the sim opens up smoothly
+  const R=Math.max(120, nodes.length*9);
+  nodes.forEach((n,k)=>{ const a=k/nodes.length*Math.PI*2; n.x=Math.cos(a)*R; n.y=Math.sin(a)*R; });
+
+  // candidate links: weight = shared def words + 2× shared root words
+  const cand=[];
+  const inter=(A,B)=>{ let s=0; for(const t of A) if(B.has(t)) s++; return s; };
+  for(let a=0;a<nodes.length;a++) for(let b=a+1;b<nodes.length;b++){
+    const w=inter(nodes[a].defT,nodes[b].defT) + 2*inter(nodes[a].rootT,nodes[b].rootT);
+    if(w>0) cand.push({a,b,w});
+  }
+  cand.sort((x,y)=>y.w-x.w);
+
+  // keep strong links (w>=2), capped to ~4 per node to avoid a hairball
+  const deg=new Array(nodes.length).fill(0), edges=[], seen=new Set();
+  const key=(a,b)=>a<b?a+'-'+b:b+'-'+a;
+  for(const e of cand){
+    if(e.w<2) continue;
+    if(deg[e.a]>=4 || deg[e.b]>=4) continue;
+    if(seen.has(key(e.a,e.b))) continue;
+    seen.add(key(e.a,e.b)); edges.push(e); deg[e.a]++; deg[e.b]++;
+  }
+  // rescue: give any still-isolated word its single best partner (w>=1)
+  for(const e of cand){
+    if(deg[e.a]>0 && deg[e.b]>0) continue;
+    if(seen.has(key(e.a,e.b))) continue;
+    seen.add(key(e.a,e.b)); edges.push(e); deg[e.a]++; deg[e.b]++;
+  }
+  // adjacency (for highlight on select)
+  const adj={}; nodes.forEach(n=>adj[n.id]=new Set());
+  for(const e of edges){ adj[nodes[e.a].id].add(nodes[e.b].id); adj[nodes[e.b].id].add(nodes[e.a].id); }
+  return {nodes, edges, adj};
+}
+
+function netColor(c){
+  if(c.reps===0) return '#9aa3c7';            // new (grey)
+  if(c.due<=Date.now()) return '#fb7185';     // due to review (red)
+  if(c.interval>=21) return '#34d399';        // well learned (green)
+  return '#22d3ee';                           // learning (cyan)
+}
+
+let net=null;
+function renderWeb(){
+  const m=document.getElementById('main');
+  if(DB.cards.length<2){
+    m.innerHTML=`<div class="done"><div class="big">🕸️</div><h2>Your word-web</h2>
+      <p>Add a few words (Add tab) and they'll appear here as a web — words with related
+      meanings or shared roots get linked together.</p></div>`;
+    return;
+  }
+  m.innerHTML=`<div class="webwrap">
+    <canvas id="net"></canvas>
+    <div class="legend">
+      <i style="background:#9aa3c7"></i>new<br>
+      <i style="background:#22d3ee"></i>learning<br>
+      <i style="background:#fb7185"></i>due now<br>
+      <i style="background:#34d399"></i>learned
+    </div>
+    <div class="netbtns">
+      <button onclick="netZoom(1.25)">＋</button>
+      <button onclick="netZoom(0.8)">－</button>
+      <button onclick="netReset()">⟳</button>
+    </div>
+    <div class="webhint">drag a node · pinch / scroll to zoom · tap a word</div>
+  </div>`;
+  startNet();
+}
+
+const REP=2600, SPRING=0.018, LEN=72, GRAV=0.02, DAMP=0.82;
+function startNet(){
+  const cv=document.getElementById('net'); if(!cv) return;
+  const g=buildGraph();
+  net={...g, cv, ctx:cv.getContext('2d'), tf:{s:1,x:0,y:0}, sel:null,
+    cx:0, cy:0, alpha:1, raf:null, dragNode:null, dragging:false, pinching:false,
+    pointers:new Map(), pinchStart:null, moved:0, downId:null, dpr:Math.min(devicePixelRatio||1,2)};
+  sizeNet();
+  // center the canvas origin on the middle of the view
+  net.tf.x=net.cx; net.tf.y=net.cy;
+  bindNet();
+  window.addEventListener('resize', sizeNet);
+  net.raf=requestAnimationFrame(frameNet);
+}
+function stopNet(){
+  if(!net) return;
+  if(net.raf) cancelAnimationFrame(net.raf);
+  window.removeEventListener('resize', sizeNet);
+  net=null;
+}
+function sizeNet(){
+  if(!net) return; const cv=net.cv;
+  const w=cv.clientWidth, h=cv.clientHeight;
+  net.cx=w/2; net.cy=h/2;
+  cv.width=w*net.dpr; cv.height=h*net.dpr;
+  drawNet();
+}
+
+// --- coordinate helpers (screen<->world, in CSS pixels) ---
+function s2w(sx,sy){ const t=net.tf; return {x:(sx-t.x)/t.s, y:(sy-t.y)/t.s}; }
+function nodeAt(sx,sy){
+  const p=s2w(sx,sy); let best=null,bd=1e9;
+  for(const n of net.nodes){ const dx=n.x-p.x, dy=n.y-p.y, d=dx*dx+dy*dy;
+    if(d<bd){bd=d;best=n;} }
+  const r=(14/net.tf.s); if(best && bd<=r*r) return best; return null;
+}
+
+// --- physics ---
+function frameNet(){
+  tickNet(); drawNet();
+  net.raf=(net.alpha>0.02 || net.dragging || net.pinching)?requestAnimationFrame(frameNet):null;
+}
+function reheat(a){ if(!net) return; net.alpha=Math.max(net.alpha,a); if(!net.raf) net.raf=requestAnimationFrame(frameNet); }
+function tickNet(){
+  const n=net.nodes, A=net.alpha;
+  for(const a of n){ a.fx=0; a.fy=0; }
+  for(let i=0;i<n.length;i++) for(let j=i+1;j<n.length;j++){
+    const a=n[i],b=n[j]; let dx=a.x-b.x,dy=a.y-b.y; let d=Math.sqrt(dx*dx+dy*dy)||0.1;
+    const f=REP/(d*d)*A, fx=f*dx/d, fy=f*dy/d;
+    a.fx+=fx; a.fy+=fy; b.fx-=fx; b.fy-=fy;
+  }
+  for(const e of net.edges){
+    const a=n[e.a],b=n[e.b]; let dx=b.x-a.x,dy=b.y-a.y; let d=Math.sqrt(dx*dx+dy*dy)||0.1;
+    const f=(d-LEN)*SPRING*Math.min(e.w,4)*A, fx=f*dx/d, fy=f*dy/d;
+    a.fx+=fx; a.fy+=fy; b.fx-=fx; b.fy-=fy;
+  }
+  for(const a of n){ a.fx+=(-a.x)*GRAV*A; a.fy+=(-a.y)*GRAV*A; }   // pull toward origin (center)
+  for(const a of n){
+    if(a===net.dragNode) continue;
+    a.vx=(a.vx+a.fx)*DAMP; a.vy=(a.vy+a.fy)*DAMP;
+    a.x+=a.vx; a.y+=a.vy;
+  }
+  net.alpha*=0.985;
+}
+
+// --- drawing ---
+function drawNet(){
+  if(!net) return; const ctx=net.ctx, t=net.tf, d=net.dpr;
+  ctx.setTransform(d,0,0,d,0,0);
+  ctx.clearRect(0,0,net.cv.width,net.cv.height);
+  ctx.translate(t.x,t.y); ctx.scale(t.s,t.s);
+  const sel=net.sel, adj=sel?net.adj[sel.id]:null;
+  // edges
+  for(const e of net.edges){
+    const a=net.nodes[e.a], b=net.nodes[e.b];
+    const hot=sel && (a===sel||b===sel);
+    ctx.strokeStyle=sel? (hot?'rgba(124,131,255,.9)':'rgba(124,131,255,.07)')
+                       : `rgba(124,131,255,${0.12+Math.min(e.w,5)*0.05})`;
+    ctx.lineWidth=(hot?2:1)/t.s;
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+  }
+  // nodes
+  const showAll = t.s>=1.15 || net.nodes.length<=22;
+  for(const n of net.nodes){
+    const r=6+Math.min(n.c.reps,6);
+    const dim = sel && n!==sel && !(adj&&adj.has(n.id));
+    ctx.globalAlpha = dim?0.3:1;
+    ctx.fillStyle=netColor(n.c);
+    ctx.beginPath(); ctx.arc(n.x,n.y,r,0,Math.PI*2); ctx.fill();
+    if(n===sel){ ctx.strokeStyle='#fff'; ctx.lineWidth=2.5/t.s; ctx.stroke(); }
+    if(showAll || n===sel || (adj&&adj.has(n.id))){
+      ctx.globalAlpha = dim?0.3:1;
+      ctx.fillStyle='#eef1ff'; ctx.font=`${12/t.s}px -apple-system,Segoe UI,Roboto,sans-serif`;
+      ctx.textAlign='center'; ctx.textBaseline='top';
+      ctx.fillText(n.w, n.x, n.y+r+2);
+    }
+  }
+  ctx.globalAlpha=1;
+}
+
+// --- zoom buttons ---
+function netZoom(f){ if(!net) return; const t=net.tf;
+  const wx=(net.cx-t.x)/t.s, wy=(net.cy-t.y)/t.s;
+  t.s=Math.max(0.3,Math.min(4,t.s*f)); t.x=net.cx-wx*t.s; t.y=net.cy-wy*t.s; drawNet();
+}
+function netReset(){ if(!net) return; net.tf={s:1,x:net.cx,y:net.cy}; net.sel=null; closePanel(); reheat(0.6); }
+
+// --- selection panel ---
+function netSelect(n){
+  net.sel=n; drawNet();
+  let p=document.getElementById('netpanel');
+  if(!p){ p=document.createElement('div'); p.id='netpanel'; p.className='netpanel';
+    document.querySelector('.webwrap').appendChild(p); }
+  const c=n.c;
+  p.innerHTML=`<span class="x" onclick="closePanel()">✕</span>
+    <div class="w">${c.w}</div>
+    ${c.pos?`<div class="p">${c.pos}</div>`:''}
+    <div class="d">${c.def||'<span style="color:var(--muted)">no definition yet</span>'}</div>
+    <button class="go" onclick="netStudy('${c.id}')">Study this word →</button>`;
+}
+function closePanel(){ const p=document.getElementById('netpanel'); if(p) p.remove(); if(net){ net.sel=null; drawNet(); } }
+function netStudy(id){
+  const c=DB.cards.find(x=>x.id===id); if(!c) return;
+  c.due=Date.now(); save(DB);          // make it due so Study shows it next
+  go('study');
+}
+
+// --- pointer interaction (drag / pan / pinch / tap) ---
+function bindNet(){
+  const cv=net.cv;
+  cv.addEventListener('pointerdown',e=>{
+    cv.setPointerCapture(e.pointerId);
+    net.pointers.set(e.pointerId,{x:e.offsetX,y:e.offsetY});
+    net.moved=0;
+    if(net.pointers.size===1){
+      const n=nodeAt(e.offsetX,e.offsetY);
+      net.downId=n?n.id:'__bg__';
+      if(n){ net.dragNode=n; net.dragging=true; }
+      else { net.panning=true; net.last={x:e.offsetX,y:e.offsetY}; }
+    } else if(net.pointers.size===2){
+      net.dragNode=null; net.dragging=false; net.panning=false; net.pinching=true;
+      const pts=[...net.pointers.values()];
+      const mid={x:(pts[0].x+pts[1].x)/2,y:(pts[0].y+pts[1].y)/2};
+      net.pinchStart={dist:dist2(pts[0],pts[1]), s:net.tf.s, world:s2w(mid.x,mid.y)};
+    }
+  });
+  cv.addEventListener('pointermove',e=>{
+    const pr=net.pointers.get(e.pointerId); if(!pr) return;
+    const px=e.offsetX, py=e.offsetY; net.moved+=Math.abs(px-pr.x)+Math.abs(py-pr.y);
+    pr.x=px; pr.y=py;
+    if(net.pinching && net.pointers.size>=2){
+      const pts=[...net.pointers.values()];
+      const mid={x:(pts[0].x+pts[1].x)/2,y:(pts[0].y+pts[1].y)/2};
+      const ps=net.pinchStart;
+      net.tf.s=Math.max(0.3,Math.min(4, ps.s*dist2(pts[0],pts[1])/ps.dist));
+      net.tf.x=mid.x-ps.world.x*net.tf.s; net.tf.y=mid.y-ps.world.y*net.tf.s;
+      drawNet();
+    } else if(net.dragNode){
+      const w=s2w(px,py); net.dragNode.x=w.x; net.dragNode.y=w.y;
+      net.dragNode.vx=0; net.dragNode.vy=0; reheat(0.35);
+    } else if(net.panning){
+      net.tf.x+=px-net.last.x; net.tf.y+=py-net.last.y; net.last={x:px,y:py}; drawNet();
+    }
+  });
+  const end=e=>{
+    net.pointers.delete(e.pointerId);
+    if(net.moved<6 && net.pointers.size===0){          // a tap, not a drag
+      if(net.downId && net.downId!=='__bg__'){ const n=net.nodes.find(x=>x.id===net.downId); if(n) netSelect(n); }
+      else closePanel();
+    }
+    if(net.pointers.size<2) net.pinching=false;
+    if(net.pointers.size===0){ net.dragNode=null; net.dragging=false; net.panning=false; }
+  };
+  cv.addEventListener('pointerup',end);
+  cv.addEventListener('pointercancel',end);
+  cv.addEventListener('wheel',e=>{ e.preventDefault();
+    const t=net.tf, w=s2w(e.offsetX,e.offsetY), f=e.deltaY<0?1.1:0.9;
+    t.s=Math.max(0.3,Math.min(4,t.s*f)); t.x=e.offsetX-w.x*t.s; t.y=e.offsetY-w.y*t.s; drawNet();
+  },{passive:false});
+}
+function dist2(a,b){ return Math.hypot(a.x-b.x,a.y-b.y); }
 
 render();
 </script>
