@@ -307,12 +307,12 @@ function renderStats(){
 function renderPacks(){
   const m=document.getElementById('main');
   m.innerHTML = `<div class="small" style="margin:6px 4px 14px">Choose a pack to learn its words.</div>` +
-    Object.keys(PACKS).map(name=>{
+    Object.keys(PACKS).map((name,idx)=>{
       const cards=packCards(name), total=cards.length;
       const learned=cards.filter(c=>c.reps>0).length;
       const due=dueCards(name).length;
       const pct=total?Math.round(learned/total*100):0;
-      return `<div class="pack" onclick="openPack('${esc(name)}')">
+      return `<div class="pack" onclick="openPack(${idx})">
         <div style="flex:1">
           <div class="pname">${esc(name)}</div>
           <div class="pmeta">${total} groups · ${learned} started · <b style="color:var(--accent)">${due} due</b></div>
@@ -322,7 +322,7 @@ function renderPacks(){
       </div>`;
     }).join('');
 }
-function openPack(name){ currentPack=name; go('study'); }
+function openPack(idx){ currentPack=Object.keys(PACKS)[idx]; go('study'); }
 
 function renderStudy(){
   const m=document.getElementById('main');
