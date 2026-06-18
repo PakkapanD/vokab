@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <meta name="theme-color" content="#4f46e5" />
-<title>Vokab — learn words by their links</title>
+<title>Vokab — Vocab by P'N</title>
 <style>
   :root{
     --bg:#0f1220; --card:#1a1f35; --card2:#232a45; --ink:#eef1ff; --muted:#9aa3c7;
@@ -31,31 +31,39 @@
     background:var(--card);border:1px solid var(--line);border-radius:18px;
     padding:22px;margin-bottom:16px;box-shadow:0 10px 30px rgba(0,0,0,.25);
   }
-  .word{font-size:34px;font-weight:700;letter-spacing:.3px}
-  .pos{font-size:13px;color:var(--muted);font-style:italic;margin-top:2px}
-  .pron{font-size:14px;color:var(--accent);margin-top:4px;cursor:pointer;display:inline-block}
-  .def{margin-top:14px;font-size:17px;line-height:1.5}
+
+  /* ---- pack chooser ---- */
+  .pack{
+    background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:20px;margin-bottom:16px;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.25);
+    display:flex;justify-content:space-between;align-items:center;gap:14px;
+  }
+  .pack:active{transform:scale(.99)}
+  .pack .pname{font-size:21px;font-weight:700}
+  .pack .pmeta{font-size:13px;color:var(--muted);margin-top:4px}
+  .pack .parrow{font-size:26px;color:var(--accent)}
+  .bar{height:8px;border-radius:99px;background:var(--card2);margin-top:12px;overflow:hidden}
+  .bar>i{display:block;height:100%;background:var(--good)}
+
+  /* ---- study card ---- */
+  .th{font-size:30px;font-weight:700;letter-spacing:.3px;line-height:1.3}
+  .pos{font-size:13px;color:var(--muted);font-style:italic;margin-top:6px}
   .hidden{display:none}
+  .reveal-hint{margin-top:22px;color:var(--muted);font-size:14px;text-align:center;line-height:1.6}
 
-  .reveal-hint{margin-top:18px;color:var(--muted);font-size:14px;text-align:center}
-
-  .web{margin-top:18px}
-  .web h3{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:14px 0 8px}
-  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .tiers{margin-top:16px}
+  .tier{display:flex;flex-wrap:wrap;gap:8px;padding:12px 0}
+  .tier+.tier{border-top:1px solid var(--line)}
   .chip{
     background:var(--card2);border:1px solid var(--line);color:var(--ink);
-    padding:6px 11px;border-radius:999px;font-size:13px;cursor:pointer;
+    padding:7px 12px;border-radius:999px;font-size:15px;cursor:pointer;
   }
-  .chip.syn{border-color:#3b6}
-  .chip.ant{border-color:#b55}
-  .chip.col{border-color:#46c}
   .chip:active{transform:scale(.96)}
-  .root{background:var(--card2);border:1px dashed var(--accent);border-radius:12px;padding:10px 12px;margin-top:6px;font-size:14px;line-height:1.5}
-  .root b{color:var(--accent)}
 
   .practice{margin-top:18px}
+  .practice h3{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:0 0 8px}
   .practice textarea{
-    width:100%;min-height:70px;background:var(--bg);color:var(--ink);
+    width:100%;min-height:64px;background:var(--bg);color:var(--ink);
     border:1px solid var(--line);border-radius:12px;padding:10px;font-size:15px;resize:vertical;font-family:inherit;
   }
   .row{display:flex;gap:8px;margin-top:10px}
@@ -67,11 +75,10 @@
   .b-show{background:var(--accent);color:#0c1024}
 
   .small{font-size:12px;color:var(--muted)}
-  .loading{color:var(--muted);font-size:13px}
-
   .done{text-align:center;padding:50px 20px}
   .done .big{font-size:46px}
-  .done p{color:var(--muted)}
+  .done h2{margin:10px 0}
+  .done p{color:var(--muted);line-height:1.6}
 
   nav{
     position:fixed;left:0;right:0;bottom:0;max-width:520px;margin:0 auto;
@@ -83,31 +90,12 @@
   nav button.on{color:var(--accent)}
   nav button .ic{display:block;font-size:20px;margin-bottom:2px}
 
-  .listitem{display:flex;justify-content:space-between;align-items:center;padding:12px 4px;border-bottom:1px solid var(--line)}
-  .listitem .due{font-size:12px;color:var(--muted)}
-  .addbar{display:flex;gap:8px;margin:6px 0 14px}
-  .addbar input{flex:1;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:11px;font-size:15px}
-  .addbar button{background:var(--accent);color:#0c1024;border:none;border-radius:10px;padding:0 16px;font-weight:600;cursor:pointer}
-  .tag{font-size:11px;padding:2px 7px;border-radius:6px;background:var(--card2);color:var(--muted);margin-left:6px}
-
-  /* ----- word-web graph (Web tab) ----- */
-  .webwrap{position:relative;margin:-8px -16px 0;height:calc(100vh - 168px);min-height:360px;overflow:hidden;
-    background:radial-gradient(circle at 50% 38%, #151b33, var(--bg));border-bottom:1px solid var(--line)}
-  canvas#net{display:block;width:100%;height:100%;touch-action:none}
-  .webhint{position:absolute;bottom:8px;left:0;right:0;text-align:center;pointer-events:none;color:var(--muted);font-size:11px}
-  .legend{position:absolute;top:8px;left:10px;font-size:11px;color:var(--muted);line-height:1.8;pointer-events:none}
-  .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
-  .netbtns{position:absolute;top:8px;right:10px;display:flex;flex-direction:column;gap:6px}
-  .netbtns button{width:36px;height:36px;border-radius:10px;background:var(--card2);color:var(--ink);
-    border:1px solid var(--line);font-size:18px;cursor:pointer;line-height:1}
-  .netpanel{position:absolute;left:10px;right:10px;bottom:26px;background:var(--card);border:1px solid var(--line);
-    border-radius:14px;padding:12px 14px 14px;box-shadow:0 12px 34px rgba(0,0,0,.5)}
-  .netpanel .w{font-size:21px;font-weight:700}
-  .netpanel .p{font-size:12px;color:var(--muted);font-style:italic}
-  .netpanel .d{font-size:14px;margin-top:5px;line-height:1.45}
-  .netpanel .x{position:absolute;top:7px;right:13px;cursor:pointer;color:var(--muted);font-size:18px}
-  .netpanel .go{margin-top:11px;background:var(--accent);color:#0c1024;border:none;border-radius:10px;
-    padding:8px 15px;font-weight:600;cursor:pointer}
+  .concept{padding:14px 4px;border-bottom:1px solid var(--line)}
+  .concept .ch{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .concept .cth{font-size:17px;font-weight:600}
+  .concept .cpos{font-size:12px;color:var(--muted);font-style:italic}
+  .concept .cw{margin-top:6px;font-size:14px;color:var(--muted);line-height:1.6}
+  .concept .due{font-size:11px;color:var(--accent)}
 </style>
 </head>
 <body>
@@ -120,148 +108,149 @@
   <main id="main"></main>
 
   <nav>
-    <button id="nav-study" class="on" onclick="go('study')"><span class="ic">🎯</span>Study</button>
-    <button id="nav-web" onclick="go('web')"><span class="ic">🕸️</span>Web</button>
+    <button id="nav-packs" class="on" onclick="go('packs')"><span class="ic">📦</span>Packs</button>
+    <button id="nav-study" onclick="go('study')"><span class="ic">🎯</span>Study</button>
     <button id="nav-browse" onclick="go('browse')"><span class="ic">📚</span>Words</button>
-    <button id="nav-add" onclick="go('add')"><span class="ic">➕</span>Add</button>
   </nav>
 </div>
 
 <script>
 /* ----------------------------------------------------------
-   Vokab — single-file vocab trainer (SAT + Thai A-Level English)
-   Method: links (synonyms/antonyms/collocations/roots)
-           + active recall + spaced repetition + your own sentences
-   Storage: localStorage (fully on-device)
-   Online bonus: Datamuse API for the live "word web" (free, no key)
+   Vokab — single-file vocab trainer
+   Pack: "Vocab by P'N" (Thai meaning -> cluster of English synonyms,
+         graded by difficulty tier). Learn by: pick a pack -> recall
+         the English words from the Thai meaning -> spaced repetition.
+   Storage: localStorage only (fully on-device).
 -----------------------------------------------------------*/
 
-// ---------- seed deck (edit / add your own in the Add tab) ----------
-const SEED = [
-  {w:"benevolent", pos:"adj", def:"kind, generous, wanting to do good for others", root:"Latin <b>bene-</b> = good (→ benefit, benefactor, benediction)"},
-  {w:"candid", pos:"adj", def:"honest and direct; saying what you really think", root:"Latin <b>candidus</b> = white, pure (→ candidate, candour)"},
-  {w:"diligent", pos:"adj", def:"hard-working and careful in your effort", root:"Latin <b>diligere</b> = to value/take care"},
-  {w:"ephemeral", pos:"adj", def:"lasting a very short time", root:"Greek <b>ephemeros</b> = lasting a day"},
-  {w:"gregarious", pos:"adj", def:"sociable; loving the company of others", root:"Latin <b>grex</b> = flock/herd (→ congregate, segregate)"},
-  {w:"meticulous", pos:"adj", def:"extremely careful about small details", root:"Latin <b>metus</b> = fear (→ overly careful)"},
-  {w:"pragmatic", pos:"adj", def:"practical; dealing with things sensibly, not idealistically", root:"Greek <b>pragma</b> = a deed/action"},
-  {w:"resilient", pos:"adj", def:"able to recover quickly from difficulty", root:"Latin <b>resilire</b> = to bounce back"},
-  {w:"scrutinize", pos:"verb", def:"to examine closely and critically", root:"Latin <b>scrutari</b> = to search/sort rubbish"},
-  {w:"ubiquitous", pos:"adj", def:"present everywhere at the same time", root:"Latin <b>ubique</b> = everywhere"},
-  {w:"alleviate", pos:"verb", def:"to make pain or a problem less severe", root:"Latin <b>levis</b> = light (→ elevate, levity)"},
-  {w:"cautious", pos:"adj", def:"careful to avoid danger or mistakes", root:"Latin <b>cavere</b> = to beware"},
-];
-
-// ---------- word packs (tap to load in the Add tab) ----------
+// ---------- the packs (baked in; loaded automatically) ----------
+// Each entry: { th: Thai meaning, pos, groups: [ [tier 1 words], [tier 2 words], ... ] }
 const PACKS = {
-"SAT Core": [
- {w:"aberration",pos:"n",def:"a departure from what is normal or expected",root:"Latin <b>aberrare</b> = to wander away"},
- {w:"abstain",pos:"verb",def:"to choose not to do something, especially something enjoyable",root:"Latin <b>abs-</b> (away) + <b>tenere</b> (to hold)"},
- {w:"adversity",pos:"n",def:"hardship; a difficult or unlucky situation",root:"Latin <b>adversus</b> = turned against"},
- {w:"aesthetic",pos:"adj",def:"concerned with beauty or the appreciation of beauty",root:"Greek <b>aisthesis</b> = perception"},
- {w:"amiable",pos:"adj",def:"friendly and pleasant; easy to like",root:"Latin <b>amare</b> = to love (→ amicable, amity)"},
- {w:"ambiguous",pos:"adj",def:"open to more than one interpretation; unclear",root:"Latin <b>ambi-</b> = both ways"},
- {w:"apathy",pos:"n",def:"lack of interest, enthusiasm, or concern",root:"Greek <b>a-</b> (without) + <b>pathos</b> (feeling)"},
- {w:"arduous",pos:"adj",def:"requiring great effort; difficult and tiring",root:"Latin <b>arduus</b> = steep, hard"},
- {w:"articulate",pos:"adj",def:"able to express ideas clearly and fluently",root:"Latin <b>articulus</b> = a joint (→ clearly jointed speech)"},
- {w:"austere",pos:"adj",def:"strict and plain; without comfort or decoration",root:"Greek <b>austeros</b> = harsh"},
- {w:"belligerent",pos:"adj",def:"hostile and aggressive; eager to fight",root:"Latin <b>bellum</b> = war (→ rebel, belligerence)"},
- {w:"benign",pos:"adj",def:"gentle, kind, and harmless",root:"Latin <b>bene</b> = well/good"},
- {w:"brevity",pos:"n",def:"shortness; concise expression",root:"Latin <b>brevis</b> = short (→ abbreviate, brief)"},
- {w:"cacophony",pos:"n",def:"a harsh, unpleasant mixture of sounds",root:"Greek <b>kakos</b> (bad) + <b>phone</b> (sound)"},
- {w:"capricious",pos:"adj",def:"given to sudden changes of mood; unpredictable",root:"Italian <b>capriccio</b> = a sudden whim"},
- {w:"censure",pos:"verb",def:"to express strong, formal disapproval of",root:"Latin <b>censere</b> = to assess/judge"},
- {w:"coherent",pos:"adj",def:"logical and clearly connected",root:"Latin <b>co-</b> + <b>haerere</b> (to stick together)"},
- {w:"complacent",pos:"adj",def:"smugly satisfied and unaware of dangers",root:"Latin <b>complacere</b> = to please greatly"},
- {w:"conciliatory",pos:"adj",def:"intended to make peace or win goodwill",root:"Latin <b>conciliare</b> = to bring together"},
- {w:"conspicuous",pos:"adj",def:"clearly visible; standing out and attracting notice",root:"Latin <b>conspicere</b> = to look at"},
- {w:"cryptic",pos:"adj",def:"mysterious; having a hidden meaning",root:"Greek <b>kryptos</b> = hidden (→ crypt, encrypt)"},
- {w:"deference",pos:"n",def:"respectful yielding to another's wishes or opinion",root:"Latin <b>deferre</b> = to carry/yield"},
- {w:"deride",pos:"verb",def:"to mock or ridicule scornfully",root:"Latin <b>de-</b> + <b>ridere</b> (to laugh at)"},
- {w:"despondent",pos:"adj",def:"in low spirits; deeply discouraged",root:"Latin <b>despondere</b> = to give up"},
- {w:"deter",pos:"verb",def:"to discourage someone from acting through fear or doubt",root:"Latin <b>deterrere</b> = to frighten off"},
- {w:"didactic",pos:"adj",def:"intended to teach or instruct (sometimes too much)",root:"Greek <b>didaktikos</b> = apt at teaching"},
- {w:"diffident",pos:"adj",def:"shy and lacking self-confidence",root:"Latin <b>diffidere</b> = to distrust"},
- {w:"digress",pos:"verb",def:"to stray from the main subject in speech or writing",root:"Latin <b>di-</b> (apart) + <b>gradi</b> (to step)"},
- {w:"disparage",pos:"verb",def:"to belittle; to speak of as worthless",root:"Old French <b>desparagier</b> = to lower in rank"},
- {w:"dogmatic",pos:"adj",def:"asserting opinions as if they were undeniable facts",root:"Greek <b>dogma</b> = opinion/belief"},
- {w:"eloquent",pos:"adj",def:"fluent and persuasive in speaking or writing",root:"Latin <b>eloqui</b> = to speak out"},
- {w:"empirical",pos:"adj",def:"based on observation or experiment, not theory",root:"Greek <b>empeiria</b> = experience"},
- {w:"enervate",pos:"verb",def:"to weaken; to drain of energy",root:"Latin <b>enervare</b> = to remove the sinews"},
- {w:"equivocal",pos:"adj",def:"ambiguous; deliberately vague to mislead",root:"Latin <b>aequi-</b> (equal) + <b>vox</b> (voice)"},
- {w:"erudite",pos:"adj",def:"having or showing deep, scholarly knowledge",root:"Latin <b>eruditus</b> = instructed"},
- {w:"exacerbate",pos:"verb",def:"to make a problem or bad situation worse",root:"Latin <b>acerbus</b> = harsh, bitter"},
- {w:"exemplary",pos:"adj",def:"serving as an outstanding model; admirable",root:"Latin <b>exemplum</b> = example"},
- {w:"extol",pos:"verb",def:"to praise highly and enthusiastically",root:"Latin <b>extollere</b> = to lift up"},
- {w:"fastidious",pos:"adj",def:"very attentive to detail; hard to please",root:"Latin <b>fastidium</b> = loathing"},
- {w:"frugal",pos:"adj",def:"careful with money or resources; thrifty",root:"Latin <b>frugalis</b> = economical"},
- {w:"garrulous",pos:"adj",def:"excessively talkative, especially about trivial things",root:"Latin <b>garrire</b> = to chatter"},
- {w:"hackneyed",pos:"adj",def:"overused and therefore unoriginal; clichéd",root:"from <b>hackney</b> = a horse for hire (worn out from overuse)"},
- {w:"impartial",pos:"adj",def:"treating all sides fairly; unbiased",root:"Latin <b>im-</b> (not) + <b>partial</b>"},
- {w:"impetuous",pos:"adj",def:"acting quickly and rashly, without thought",root:"Latin <b>impetus</b> = attack, force"},
- {w:"inadvertent",pos:"adj",def:"not intended; accidental",root:"Latin <b>in-</b> (not) + <b>advertere</b> (to turn toward)"},
- {w:"incessant",pos:"adj",def:"continuing without pause or interruption",root:"Latin <b>in-</b> (not) + <b>cessare</b> (to stop)"},
- {w:"ingenuous",pos:"adj",def:"innocent and sincere; trustingly naive",root:"Latin <b>ingenuus</b> = frank, native-born"},
- {w:"innocuous",pos:"adj",def:"harmless; unlikely to cause offense or injury",root:"Latin <b>in-</b> (not) + <b>nocere</b> (to harm)"},
- {w:"insipid",pos:"adj",def:"lacking flavor, interest, or excitement; dull",root:"Latin <b>in-</b> (not) + <b>sapidus</b> (tasty)"},
- {w:"intrepid",pos:"adj",def:"fearless; boldly brave",root:"Latin <b>in-</b> (not) + <b>trepidus</b> (alarmed)"},
- {w:"juxtapose",pos:"verb",def:"to place side by side for comparison or contrast",root:"Latin <b>juxta</b> (beside) + <b>pose</b> (place)"},
- {w:"laconic",pos:"adj",def:"using very few words; terse",root:"from <b>Laconia</b> (Sparta), famed for blunt speech"},
- {w:"lethargic",pos:"adj",def:"sluggish; lacking energy and alertness",root:"Greek <b>lethargia</b> = drowsiness"},
- {w:"lucid",pos:"adj",def:"clear and easy to understand; mentally clear",root:"Latin <b>lucidus</b> = bright, full of light"},
- {w:"malevolent",pos:"adj",def:"wishing harm to others; spiteful",root:"Latin <b>male</b> (badly) + <b>velle</b> (to wish)"},
- {w:"mitigate",pos:"verb",def:"to make less severe, serious, or painful",root:"Latin <b>mitigare</b> = to soften"},
- {w:"mundane",pos:"adj",def:"ordinary, dull, and lacking interest",root:"Latin <b>mundus</b> = world (worldly = ordinary)"},
- {w:"nonchalant",pos:"adj",def:"casually calm and unconcerned",root:"French <b>nonchaloir</b> = to lack warmth/care"},
- {w:"obscure",pos:"adj",def:"unclear, hard to understand, or little known",root:"Latin <b>obscurus</b> = dark, covered"},
- {w:"obsolete",pos:"adj",def:"out of date; no longer in use",root:"Latin <b>obsolescere</b> = to fall into disuse"},
- {w:"ostentatious",pos:"adj",def:"showy; designed to impress or attract notice",root:"Latin <b>ostentare</b> = to display"},
- {w:"paramount",pos:"adj",def:"more important than anything else; supreme",root:"Anglo-French <b>par amont</b> = above"},
- {w:"perfunctory",pos:"adj",def:"done routinely, with little care or interest",root:"Latin <b>perfunctus</b> = having got through (a duty)"},
- {w:"pervasive",pos:"adj",def:"spreading widely through every part",root:"Latin <b>pervadere</b> = to go through"},
- {w:"placate",pos:"verb",def:"to make someone less angry; to soothe",root:"Latin <b>placare</b> = to calm"},
- {w:"plausible",pos:"adj",def:"seeming reasonable or believable",root:"Latin <b>plaudere</b> = to applaud/approve"},
- {w:"precarious",pos:"adj",def:"dangerously unstable or uncertain",root:"Latin <b>precarius</b> = obtained by begging (uncertain)"},
- {w:"prudent",pos:"adj",def:"acting with care and good judgment for the future",root:"Latin <b>prudens</b> = foreseeing, wise"},
- {w:"quell",pos:"verb",def:"to put an end to, usually by force; to suppress",root:"Old English <b>cwellan</b> = to kill, subdue"},
- {w:"rancor",pos:"n",def:"bitter, long-lasting resentment",root:"Latin <b>rancere</b> = to stink (bitterness that festers)"},
- {w:"reticent",pos:"adj",def:"reserved; reluctant to speak or reveal feelings",root:"Latin <b>reticere</b> = to keep silent"},
- {w:"spurious",pos:"adj",def:"false or fake; not genuine",root:"Latin <b>spurius</b> = illegitimate"},
- {w:"squander",pos:"verb",def:"to waste recklessly, especially money or chances",root:"likely imitative of careless scattering"},
- {w:"superfluous",pos:"adj",def:"more than is needed; unnecessary",root:"Latin <b>super</b> (over) + <b>fluere</b> (to flow)"},
- {w:"tenacious",pos:"adj",def:"holding firmly; persistent and determined",root:"Latin <b>tenere</b> = to hold (→ retain, tenant)"},
- {w:"trivial",pos:"adj",def:"of little value or importance",root:"Latin <b>trivialis</b> = commonplace (found at every crossroad)"},
- {w:"vindicate",pos:"verb",def:"to clear of blame or suspicion; to justify",root:"Latin <b>vindicare</b> = to claim, avenge"},
- {w:"wary",pos:"adj",def:"cautious and watchful of danger or trouble",root:"Old English <b>wær</b> = aware, careful"}
+"Vocab by P'N": [
+ {th:"ตรวจสอบ", pos:"v", groups:[["check","in'spect","in'vestigate","ex'amine","'scrutinize"]]},
+ {th:"ศึกษา", pos:"v", groups:[["'study","probe"],["delve","ex'amine","in'vestigate","ex'plore"]]},
+ {th:"จัดการ, รับมือ", pos:"v", groups:[["ad'dress","at'tend to"],["'handle","'tackle"],["deal (+with)","cope (+with)","'grapple (+with)"]]},
+ {th:"เดา", pos:"v", groups:[["guess","'speculate","con'jecture","sur'mise"]]},
+ {th:"บอกเป็นนัย", pos:"v", groups:[["hint","sug'gest","in'sinuate","im'ply"]]},
+ {th:"ทำนาย, พยากรณ์, คาดคะเน, คาดการณ์", pos:"v", groups:[["pre'dict","ex'pect","pro'ject","en'vision","en'visage"],["an'ticipate","'prophesy"],["fore'see","'forecast","fore'tell"]]},
+ {th:"ครุ่นคิด, พิจารณา", pos:"v", groups:[["'ponder","'contemplate"],["mull (over)","muse (on)","'meditate (on)"],["dwell (on)","brood (on)","'ruminate (on)"],["re'flect (on)","'cogitate (on)","de'liberate (about)","think about"]]},
+ {th:"อธิบาย (ให้ชัดเจนขึ้น)", pos:"v", groups:[["ex'plain","ex'pound"],["'explicate","e'laborate","e'lucidate"],["'illustrate","de'lineate","'clarify"]]},
+ {th:"เสริม, เสริมให้แข็งแรงขึ้น", pos:"v", groups:[["'strengthen","shore up","'bolster up","'buttress"],["up'hold","ce'ment","rein'force","'fortify"]]},
+ {th:"โน้มน้าว", pos:"v", groups:[["prod","in'duce","per'suade","con'vince"],["'wheedle","ca'jole","coax","'influence","sway"]]},
+ {th:"ปลูกฝัง", pos:"v", groups:[["en'trench","in'grain","'brainwash"],["'inculcate","in'doctrinate","im'plant","in'still"]]},
+ {th:"ยกย่อง, ชื่นชม", pos:"v", groups:[["praise","rave","laud","ap'plaud","'compliment","com'mend"],["ex'tol","ex'alt","ac'claim","ad'mire"],["hail","'glorify","'eulogize"],["'idolize","'lionize"],["'adulate","'venerate","'worship","re'vere"]]},
+ {th:"สนับสนุน / พิสูจน์ (ว่าถูกต้อง / เป็นจริง)", pos:"v", groups:[["prove","sup'port","con'firm","bear out"],["'testify","'verify","'validate","'vindicate"],["sub'stantiate","cor'roborate"]]},
+ {th:"อนุมัติ", pos:"v", groups:[["ap'prove","per'mit","en'dorse","al'low"],["'ratify","'sanction","le'gitimize","'authorize","'license"]]},
+ {th:"ประเมิน, ประมาณ", pos:"v", groups:[["gauge","rate","ap'praise","as'sess"],["'estimate","e'valuate","size up"]]},
+ {th:"บั่นทอนทำลาย", pos:"v", groups:[["'weaken","'compromise","sub'vert","under'mine","'damage"]]},
+ {th:"ดุด่า, ต่อว่า, วิพากษ์วิจารณ์", pos:"v", groups:[["scold","be'rate","as'sail","di'sparage","con'demn","tell off","tick off"],["'criticize","chas'tise","'castigate","'censure"],["de'cry","de'nounce","'deprecate","de'plore"],["re'buke","re'prove","re'proach","'reprimand"]]},
+ {th:"เยาะเย้ย, เย้ยหยัน, ล้อเลียน, ดูถูก", pos:"v", groups:[["'ridicule","scorn","con'tempt (n)"],["dis'dain","tease","taunt","mock","jeer (+at)","sneer (+at)","de'ride"]]},
+ {th:"ใส่ร้าย, หมิ่นประมาท", pos:"v", groups:[["tra'duce","ma'lign"],["'vilify","'libel"],["de'fame","'slander"]]},
+ {th:"แปดเปื้อนชื่อเสียง", pos:"v", groups:[["taint","stain","smear","'tarnish"],["de'file","'blemish","'stigmatize"]]},
+ {th:"โอ้อวด", pos:"v", groups:[["brag","boast","crow","gloat","show off"]]},
+ {th:"ปฏิเสธ", pos:"v", groups:[["spurn","turn down"],["dis'miss","de'ny","de'cline"],["re'fuse","re'ject","re'pudiate","re'buff"]]},
+ {th:"หักล้าง", pos:"v", groups:[["dis'prove","de'bunk"],["re'but","re'fute"],["contra'dict","con'fute"]]},
+ {th:"ทำให้สับสน", pos:"v", groups:[["be'wilder","per'plex","be'muse","con'fuse"],["'flummox","'fuddle","'puzzle","'baffle"]]},
+ {th:"ทำให้อับอายขายหน้า", pos:"v", groups:[["shame","'chasten"],["a'bash","em'barrass","hu'miliate","'mortify"]]},
+ {th:"ทำให้โกรธ, ทำให้หงุดหงิด", pos:"v", groups:[["vex","irk","gall","pique","pro'voke","'incense"],["'bother","'anger","an'noy","en'rage"],["'irritate","in'furiate"],["'aggravate","ex'asperate"]]},
+ {th:"ยั่วยวน, ล่อลวง, ดึงดูด", pos:"v", groups:[["tempt","lure","al'lure","at'tract"],["en'tice","en'snare"],["ap'peal (to)","'captivate","be'witch"]]},
+ {th:"ปิดบัง, ซ่อนเร้น", pos:"v", groups:[["hide","mask","'cover","cloak","veil","shroud"],["dis'guise","con'ceal","'camouflage","ob'scure"]]},
+ {th:"เปิดเผย", pos:"v", groups:[["un'mask","un'veil","un'cover","un'fold"],["re'veal","ex'pose","dis'close","di'vulge"]]},
+ {th:"ใช้", pos:"v", groups:[["use","'utilize","'harness","ap'ply","'implement"],["de'ploy","em'ploy","ex'ploit","e'xert","'exercise"]]},
+ {th:"ตัดสินใจ", pos:"v", groups:[["re'solve","de'termine","de'cide"],["make up one's mind","make a de'cision"]]},
+ {th:"พยายาม", pos:"v", groups:[["at'tempt","try... try","strive"],["make an effort","seek - sought","'struggle","en'deavor"]]},
+ {th:"ยอม, ยอมแพ้", pos:"v", groups:[["ca'pitulate","sur'render"],["sub'mit (to)","suc'cumb (to)"],["re'lent","give in","give up","con'cede","yield to"]]},
+ {th:"ละเว้น", pos:"v", groups:[["ab'stain","re'frain","de'sist","for'bear"]]},
+ {th:"ห้าม", pos:"v", groups:[["ban","bar","for'bid"],["pro'hibit","pro'scribe"]]},
+ {th:"มองโลกในแง่ดี", pos:"adj", groups:[["opti'mistic","'upbeat","'positive","'sanguine","'hopeful"]]},
+ {th:"ละเอียดรอบคอบถี่ถ้วน", pos:"adj", groups:[["'careful","consci'entious","'thorough"],["me'ticulous","'scrupulous","fas'tidious","punc'tilious"],["as'siduous","'painstaking"]]},
+ {th:"รอบคอบ, ระมัดระวัง", pos:"adj", groups:[["'wary (+of)","'chary (+about/of)","'careful","'cautious (+about)","'prudent","'circumspect"]]},
+ {th:"ตื่นตัว, ระมัดระวัง", pos:"adj", groups:[["a'lert","at'tentive","'watchful","'vigilant"]]},
+ {th:"กระตือรือร้น, เอาจริงเอาจัง", pos:"adj", groups:[["'ardent","'eager","keen","'avid"],["dy'namic","ener'getic","enthusi'astic"],["'earnest","'zealous"]]},
+ {th:"มุ่งมั่น, แน่วแน่", pos:"adj", groups:[["'dogged","te'nacious","de'termined"],["'resolute","'adamant","in'sistent","per'sistent","perse'vering"]]},
+ {th:"เคลือบแคลงสงสัย", pos:"adj", groups:[["'skeptical","sus'picious","'dubious","'doubtful"]]},
+ {th:"เข้มงวด, ไม่ผ่อนปรน", pos:"adj", groups:[["harsh","tough","'drastic"],["'rigid","'rigorous"],["strict","stern","'stringent","aus'tere","se'vere","in'flexible"]]},
+ {th:"รวย", pos:"adj", groups:[["rich","'affluent","'opulent","'prosperous","'wealthy"],["well-to-do","well-off","well-heeled"]]},
+ {th:"ยากจน", pos:"adj", groups:[["'destitute","'indigent"],["'penniless","pe'nurious","im'poverished","poor"]]},
+ {th:"ประหยัด, มัธยัสถ์", pos:"adj", groups:[["'provident","'prudent"],["'thrifty","'frugal","eco'nomical","'sparing"]]},
+ {th:"ขี้เหนียว, ขี้งก", pos:"adj", groups:[["'stingy","'mingy","mean","'miserly","parsi'monious"]]},
+ {th:"เศร้าโศก", pos:"adj", groups:[["glum","de'pressed","be'reft","'desolate","de'jected"],["'dismal","'gloomy","'melancholy","'miserable"],["sad","'wretched","for'lorn","mo'rose"],["'sorrowful","'mournful","'woeful","'doleful"]]},
+ {th:"หยิ่งยโส, โอหัง", pos:"adj", groups:[["'arrogant","ego'tistic","hu'bristic"],["vain","con'ceited","'snobbish","super'cilious"]]},
+ {th:"เย่อหยิ่ง, อวดดี", pos:"adj", groups:[["'haughty","'lofty","self-im'portant"]]},
+ {th:"เจ้าเล่ห์, มีเล่ห์เหลี่ยม", pos:"adj", groups:[["'artful","'cunning"],["'crafty","'tricky","'sneaky","'wily"],["slick","sly","'guileful"]]},
+ {th:"ขี้เกียจ", pos:"adj", groups:[["'idle","'lazy","'slothful","'indolent"]]},
+ {th:"อ้วน", pos:"adj", groups:[["plump","stout","'bulky"],["'tubby","'chubby","'fleshy","'beefy"],["o'bese","over'weight","'corpulent"]]},
+ {th:"ไม่มั่นใจ", pos:"adj", groups:[["un'sure","un'certain"],["re'luctant","'hesitant","'tentative"]]},
+ {th:"เป็นกลาง", pos:"adj", groups:[["'neutral","de'tached","un'biased","non-'partisan"],["ob'jective","im'partial","dis'passionate","dis'interested"]]},
+ {th:"วิตกกังวล", pos:"adj", groups:[["'worried","con'cerned","per'turbed","'nervous"],["'anxious","un'easy","appre'hensive","'edgy (= on edge)"]]},
+ {th:"ตั้งใจ, เจตนา", pos:"adj", groups:[["'willful","'wanton"],["in'tentional","vo'litional"],["de'liberate","pre'meditated"]]},
+ {th:"อัจฉริยะ", pos:"n", groups:[["'prodigy","'genius","whiz","'mastermind"]]},
+ {th:"เกลียด", pos:"v", groups:[["loathe","hate","ab'hor","a'bominate"],["'execrate","de'test","de'spise"]]},
+ {th:"ความชอบ", pos:"n", groups:[["'liking","'relish","'preference","'penchant"],["predi'lection","'fondness","af'finity"]]},
+ {th:"แนวโน้มที่จะทำบางอย่าง", pos:"n", groups:[["bent","'leaning","incli'nation"],["'tendency","pro'pensity","pro'clivity","predispo'sition"]]},
+ {th:"มีแนวโน้ม", pos:"adj", groups:[["apt","prone","'likely"],["bound","'liable","in'clined"]]},
+ {th:"มีเสน่ห์, น่าหลงใหล, น่าดึงดูดใจ", pos:"adj", groups:[["at'tractive","charis'matic"],["'charming","en'chanting","en'trancing","en'thralling"],["al'luring","ap'pealing"],["be'guiling","be'witching"],["'captivating","'mesmerizing"]]},
+ {th:"แปลก, ไม่ปกติ", pos:"adj", groups:[["'funny","un'canny","freak","'freaky","'quirky"],["'curious","queer","weird","'eerie"],["quaint","pe'culiar","off'beat","bi'zarre"],["ir'regular","ec'centric","odd","ab'normal"],["strange","a'typical","a'nomalous","in'congruous"]]},
+ {th:"น่าเบื่อ", pos:"adj", groups:[["bland","ba'nal","'vapid"],["in'sipid","pro'saic"],["'lackluster","je'june"],["dull","dry","'dreary"],["'tedious","'tiresome"],["'humdrum","mun'dane","'lifeless","mo'notonous"]]},
+ {th:"เด่นชัด, โจ่งแจ้ง, สะดุดตา", pos:"adj", groups:[["'manifest","'striking","out'standing"],["ob'trusive","'obvious"],["con'spicuous","'prominent","'evident","ap'parent","'salient"]]},
+ {th:"ซับซ้อน", pos:"adj", groups:[["com'plex","'complicated","'convoluted","in'volved"],["'intricate","e'laborate","so'phisticated"]]},
+ {th:"น่าตื่นตาตื่นใจ", pos:"adj", groups:[["'splendid","spec'tacular","sen'sational"],["ma'jestic","mag'nificent"],["im'pressive","im'posing"],["'stunning","'dazzling","'breathtaking","'awe-inspiring"]]},
+ {th:"บอบบาง, เปราะบาง", pos:"adj", groups:[["'brittle","'breakable"],["frail","'fragile","'feeble","delicate"]]},
+ {th:"ยืดหยุ่น, โค้งงอได้ง่าย", pos:"adj", groups:[["'supple","e'lastic"],["'flexible","'bendable","'pliable","'pliant"]]},
+ {th:"ล้าสมัย", pos:"adj", groups:[["out'dated","out'moded","'antiquated"],["pas'sé","de'funct"],["old-'fashioned","obso'lete","antedi'luvian"]]},
+ {th:"ปลอม, เก๊", pos:"adj", groups:[["'counterfeit","fake","forged"],["'phony","feigned","'bogus","sham"]]},
+ {th:"เล็ก", pos:"adj", groups:[["'teeny","'weeny"],["'tiny","mi'nute"],["'minuscule","micro'scopic","infini'tesimal"]]},
+ {th:"สั้น, กระชับ", pos:"adj", groups:[["short","brief","'pithy","suc'cinct","la'conic","terse"],["con'cise","com'pact","con'densed"]]},
+ {th:"บังคับ, จำเป็น", pos:"adj", groups:[["'necessary","'requisite","re'quired"],["'mandatory","com'pulsory","ob'ligatory"]]},
+ {th:"ถูกต้องตามกฎหมาย, ทางกฎหมาย", pos:"adj", groups:[["'legal","'licit","'valid","le'gitimate","'lawful"]]},
+ {th:"เสี่ยงต่อ", pos:"adj", groups:[["'subject","ex'posed","prone"],["sus'ceptible","'liable","'vulnerable"]]},
+ {th:"แข็งแรง, ทน, ถึก", pos:"adj", groups:[["'vigorous","ro'bust","tough","'rugged","'healthy","strong","'hardy"],["'sturdy","fit","'lusty"]]},
+ {th:"มีมากเกิน, เกินความจำเป็น", pos:"adj", groups:[["ex'cessive","'surplus","su'perfluous","re'dundant"]]},
+ {th:"มีมาแต่เกิด", pos:"adj", groups:[["in'nate","in'born","in'bred","in'herent","in'trinsic"],["con'genital","he'reditary"]]},
+ {th:"คุณลักษณะ, คุณสมบัติ", pos:"n", groups:[["trait","'attribute","'property","'feature","characte'ristic"],["quirk","'quality","idio'syncrasy"]]},
+ {th:"ข้อเสีย, ข้อบกพร่อง", pos:"n", groups:[["flaw","fault","snag","'defect"],["'downside","'drawback","disad'vantage","'shortcoming"]]}
 ]
 };
 
 // ---------- storage ----------
-const KEY="vokab.v1";
+const KEY="vokab.v2";   // v2: new "Vocab by P'N" cluster deck (old v1 word deck removed)
 function load(){
   let s=localStorage.getItem(KEY);
-  if(s){ try{ return JSON.parse(s); }catch(e){} }
-  // first run: build cards from seed
-  const cards=SEED.map(seedToCard);
-  const db={cards, created:Date.now()};
-  save(db); return db;
+  if(s){ try{ const db=JSON.parse(s); if(db && db.cards) { syncPacks(db); return db; } }catch(e){} }
+  const db={cards:[], created:Date.now()};
+  syncPacks(db); save(db); return db;
 }
 function save(db){ localStorage.setItem(KEY, JSON.stringify(db)); }
-function seedToCard(s){
+function cryptoId(){ return Math.random().toString(36).slice(2,10); }
+
+// build a study card from a pack entry
+function toCard(e, pack){
   return {
-    id:cryptoId(), w:s.w, pos:s.pos||"", def:s.def||"", root:s.root||"",
-    sentence:"",                 // your own example sentence
-    // spaced-repetition state (SM-2 style)
+    id:cryptoId(), pack, th:e.th, pos:e.pos||"", groups:e.groups||[],
+    sentence:"",
     ease:2.5, interval:0, reps:0, due:Date.now(), lapses:0
   };
 }
-function cryptoId(){ return Math.random().toString(36).slice(2,10); }
+// make sure every pack concept exists as a card (keeps progress for ones already there)
+function syncPacks(db){
+  for(const pack in PACKS){
+    for(const e of PACKS[pack]){
+      const has=db.cards.some(c=>c.pack===pack && c.th===e.th);
+      if(!has) db.cards.push(toCard(e, pack));
+      else { // refresh content (words/pos) in case the pack was updated, keep SRS progress
+        const c=db.cards.find(c=>c.pack===pack && c.th===e.th);
+        c.pos=e.pos||""; c.groups=e.groups||[];
+      }
+    }
+  }
+}
 
 let DB = load();
+let currentPack = null;
 
-// ---------- spaced repetition (simplified SM-2 / FSRS-lite) ----------
+// ---------- spaced repetition (simplified SM-2) ----------
 const DAY=86400000;
-function schedule(card, rating){ // rating: 'again' | 'good' | 'easy'
+function schedule(card, rating){ // 'again' | 'good' | 'easy'
   card.reps++;
   if(rating==='again'){
     card.lapses++; card.interval=0; card.ease=Math.max(1.3,card.ease-0.2);
@@ -278,88 +267,103 @@ function schedule(card, rating){ // rating: 'again' | 'good' | 'easy'
   }
   save(DB);
 }
-function dueCards(){ const now=Date.now(); return DB.cards.filter(c=>c.due<=now).sort((a,b)=>a.due-b.due); }
-
-// ---------- Datamuse word-web (free, no key, needs WiFi) ----------
-const webCache={}, freqCache={};
-function parseFreq(tags){ if(!tags) return null; const t=tags.find(x=>x.indexOf('f:')===0); return t?parseFloat(t.slice(2)):null; }
-function noteFreqs(list){ for(const x of list){ const f=parseFreq(x.tags); if(f!=null) freqCache[x.word]=f; } }
-async function fetchWeb(word){
-  if(webCache[word]) return webCache[word];
-  const q=(rel)=>fetch(`https://api.datamuse.com/words?rel_${rel}=${encodeURIComponent(word)}&md=f&max=8`).then(r=>r.json()).catch(()=>[]);
-  try{
-    const [syn,ant,col]=await Promise.all([q('syn'),q('ant'),q('bga')]); // bga = words that frequently FOLLOW the word (collocations)
-    noteFreqs(syn); noteFreqs(ant); noteFreqs(col);     // md=f gives real usage frequency
-    const out={
-      syn:syn.map(x=>x.word).slice(0,8),
-      ant:ant.map(x=>x.word).slice(0,8),
-      col:col.map(x=>x.word).slice(0,6)
-    };
-    webCache[word]=out; return out;
-  }catch(e){ return {syn:[],ant:[],col:[],offline:true}; }
-}
-// frequency of a single word (occurrences per million) — for node size
-async function getFreq(word){
-  if(freqCache[word]!=null) return freqCache[word];
-  try{
-    const r=await fetch(`https://api.datamuse.com/words?sp=${encodeURIComponent(word)}&md=f&max=1`).then(r=>r.json());
-    const f = r&&r[0]? parseFreq(r[0].tags) : 0;
-    freqCache[word]= (f==null?0:f); return freqCache[word];
-  }catch(e){ return null; }
-}
+function packCards(pack){ return DB.cards.filter(c=>c.pack===pack); }
+function dueCards(pack){ const now=Date.now(); return packCards(pack).filter(c=>c.due<=now).sort((a,b)=>a.due-b.due); }
 
 // ---------- pronunciation (browser TTS, offline) ----------
+function say(w){ // strip stress marks / notes so it sounds natural
+  return w.replace(/'/g,'').replace(/\([^)]*\)/g,'').replace(/[=].*$/,'')
+          .replace(/\+/g,'').replace(/[\/]/g,' ').replace(/\s+/g,' ').trim();
+}
 function speak(t){ try{ const u=new SpeechSynthesisUtterance(t); u.lang='en-US'; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){} }
+let STUDY_SAY=[];
+function speakWord(i){ if(STUDY_SAY[i]!=null) speak(STUDY_SAY[i]); }
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 // ---------- views ----------
-let view='study';
+let view='packs';
 let revealed=false;
 let current=null;
 
-function go(v){ stopNet(); view=v; revealed=false;
-  ['study','web','browse','add'].forEach(n=>document.getElementById('nav-'+n).classList.toggle('on',n===v));
+function go(v){ view=v; revealed=false;
+  ['packs','study','browse'].forEach(n=>document.getElementById('nav-'+n).classList.toggle('on',n===v));
   render();
 }
 function render(){
   renderStats();
+  if(view==='packs') return renderPacks();
   if(view==='study') return renderStudy();
-  if(view==='web') return renderWeb();
   if(view==='browse') return renderBrowse();
-  if(view==='add') return renderAdd();
 }
 function renderStats(){
-  const due=dueCards().length, total=DB.cards.length;
-  document.getElementById('stats').innerHTML=`${total} words<br><b style="color:var(--accent)">${due}</b> due now`;
+  if(currentPack){
+    const due=dueCards(currentPack).length, total=packCards(currentPack).length;
+    document.getElementById('stats').innerHTML=`${esc(currentPack)}<br><b style="color:var(--accent)">${due}</b> due now`;
+  } else {
+    document.getElementById('stats').innerHTML='pick a pack →';
+  }
 }
+
+function renderPacks(){
+  const m=document.getElementById('main');
+  m.innerHTML = `<div class="small" style="margin:6px 4px 14px">Choose a pack to learn its words.</div>` +
+    Object.keys(PACKS).map(name=>{
+      const cards=packCards(name), total=cards.length;
+      const learned=cards.filter(c=>c.reps>0).length;
+      const due=dueCards(name).length;
+      const pct=total?Math.round(learned/total*100):0;
+      return `<div class="pack" onclick="openPack('${esc(name)}')">
+        <div style="flex:1">
+          <div class="pname">${esc(name)}</div>
+          <div class="pmeta">${total} groups · ${learned} started · <b style="color:var(--accent)">${due} due</b></div>
+          <div class="bar"><i style="width:${pct}%"></i></div>
+        </div>
+        <div class="parrow">›</div>
+      </div>`;
+    }).join('');
+}
+function openPack(name){ currentPack=name; go('study'); }
 
 function renderStudy(){
   const m=document.getElementById('main');
-  const due=dueCards();
+  if(!currentPack){
+    m.innerHTML=`<div class="done"><div class="big">📦</div>
+      <h2>Pick a pack first</h2>
+      <p>Go to the <b>Packs</b> tab and choose a pack to study.</p>
+      <div class="row" style="max-width:240px;margin:18px auto 0"><button class="act b-show" onclick="go('packs')">Choose a pack</button></div></div>`;
+    current=null; return;
+  }
+  const due=dueCards(currentPack);
   if(due.length===0){
     m.innerHTML=`<div class="done"><div class="big">✅</div>
       <h2>All caught up!</h2>
-      <p>No words due right now. Add more in the <b>Add</b> tab, or come back later — spaced repetition will bring words back right before you'd forget them.</p></div>`;
+      <p>No groups due in <b>${esc(currentPack)}</b> right now. Spaced repetition will bring them back right before you'd forget.</p>
+      <div class="row" style="max-width:240px;margin:18px auto 0"><button class="act b-ghost" onclick="go('packs')">Other packs</button></div></div>`;
     current=null; return;
   }
   current = due[0];
   const c=current;
+
+  STUDY_SAY=[];
+  const tiersHtml = c.groups.map(g=>{
+    const chips = g.map(w=>{ const i=STUDY_SAY.length; STUDY_SAY.push(say(w));
+      return `<span class="chip" onclick="speakWord(${i})">${esc(w)}</span>`; }).join('');
+    return `<div class="tier">${chips}</div>`;
+  }).join('');
+
   m.innerHTML=`
     <div class="card">
-      <div class="word">${c.w}</div>
-      ${c.pos?`<div class="pos">${c.pos}</div>`:''}
-      <div class="pron" onclick="speak('${c.w}')">🔊 hear it</div>
+      <div class="th">${esc(c.th)}</div>
+      ${c.pos?`<div class="pos">(${esc(c.pos)})</div>`:''}
 
       <div id="answer" class="${revealed?'':'hidden'}">
-        <div class="def">${c.def||'<span class="small">no definition yet — add one in Words tab</span>'}</div>
-        ${c.root?`<div class="root">🌱 ${c.root}</div>`:''}
-        <div class="web" id="web"><div class="loading">loading word-web…</div></div>
+        <div class="tiers">${tiersHtml}</div>
+        <div class="small" style="margin-top:6px">Tap a word to hear it. Lines separate easy → harder words.</div>
 
         <div class="practice">
-          <h3 style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">✍️ Use it in a sentence</h3>
-          <textarea id="sent" placeholder="Write your own sentence — this is what makes it stick for real conversation.">${c.sentence||''}</textarea>
-          <div class="row">
-            <button class="act b-ghost" onclick="saveSentence()">Save sentence</button>
-          </div>
+          <h3>✍️ Use one in a sentence</h3>
+          <textarea id="sent" placeholder="Write your own sentence with one of these words — this is what makes it stick.">${esc(c.sentence||'')}</textarea>
+          <div class="row"><button class="act b-ghost" onclick="saveSentence()">Save sentence</button></div>
         </div>
 
         <div class="row" style="margin-top:18px">
@@ -370,149 +374,36 @@ function renderStudy(){
       </div>
 
       <div id="prompt" class="${revealed?'hidden':''}">
-        <div class="reveal-hint">Do you know what this word means?<br>Recall it first, then reveal.</div>
+        <div class="reveal-hint">Which English words mean this?<br>Recall as many as you can, then reveal.</div>
         <div class="row" style="margin-top:14px">
           <button class="act b-show" onclick="reveal()">Show answer</button>
         </div>
       </div>
     </div>`;
-  if(revealed) loadWebInto(c.w);
 }
 function reveal(){ revealed=true; renderStudy(); }
-async function loadWebInto(word){
-  const el=document.getElementById('web'); if(!el) return;
-  const data=await fetchWeb(word);
-  const sec=(title,arr,cls)=> arr&&arr.length
-    ? `<h3>${title}</h3><div class="chips">${arr.map(x=>`<span class="chip ${cls}" onclick="speak('${x.replace(/'/g,"")}')">${x}</span>`).join('')}</div>` : '';
-  let html = sec('Synonyms',data.syn,'syn')+sec('Opposites',data.ant,'ant')+sec('Often followed by (collocations)',data.col,'col');
-  if(!html) html=`<div class="small">${data.offline?'Offline — connect to WiFi to load the word-web.':'No links found for this word.'}</div>`;
-  el.innerHTML=html;
-}
-function saveSentence(){ if(!current)return; const t=document.getElementById('sent').value.trim(); current.sentence=t; save(DB); flash('Saved ✓'); }
+function saveSentence(){ if(!current)return; const t=document.getElementById('sent'); if(t){current.sentence=t.value.trim(); save(DB); flash('Saved ✓');} }
 function rate(r){ if(!current)return; const t=document.getElementById('sent'); if(t) current.sentence=t.value.trim(); schedule(current,r); revealed=false; renderStudy(); renderStats(); }
 
 function renderBrowse(){
   const m=document.getElementById('main');
-  const cards=[...DB.cards].sort((a,b)=>a.w.localeCompare(b.w));
-  m.innerHTML = `<div style="margin:6px 0 12px" class="small">${cards.length} words. Tap a word to hear it.</div>` +
+  if(!currentPack){
+    m.innerHTML=`<div class="done"><div class="big">📚</div><h2>No pack chosen</h2>
+      <p>Pick a pack in the <b>Packs</b> tab to see its words.</p></div>`;
+    return;
+  }
+  const cards=packCards(currentPack);
+  m.innerHTML = `<div class="small" style="margin:6px 4px 12px">${esc(currentPack)} · ${cards.length} groups</div>` +
     cards.map(c=>{
+      const words=c.groups.flat();
       const days=Math.max(0,Math.round((c.due-Date.now())/DAY));
-      const dueTxt = c.due<=Date.now()?'<b style="color:var(--accent)">due</b>':`in ${days}d`;
-      return `<div class="listitem">
-        <div><span style="cursor:pointer" onclick="speak('${c.w}')">${c.w}</span>
-          <span class="tag">${c.reps} reps</span></div>
-        <div class="due">${dueTxt} · <span style="cursor:pointer;color:var(--again)" onclick="del('${c.id}')">✕</span></div>
+      const dueTxt = c.due<=Date.now() ? (c.reps?'due':'new') : `in ${days}d`;
+      return `<div class="concept">
+        <div class="ch"><div class="cth">${esc(c.th)} <span class="cpos">${esc(c.pos)}</span></div>
+          <div class="due">${dueTxt}</div></div>
+        <div class="cw">${words.map(esc).join(' · ')}</div>
       </div>`;
     }).join('');
-}
-function del(id){ DB.cards=DB.cards.filter(c=>c.id!==id); save(DB); render(); }
-
-function renderAdd(){
-  const m=document.getElementById('main');
-  m.innerHTML=`
-    <div class="card">
-      <h3 style="margin-top:0">Add a word</h3>
-      <div class="addbar"><input id="nw" placeholder="word (e.g. ostentatious)" /></div>
-      <input id="nd" class="addbar-in" style="width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:11px;font-size:15px" placeholder="definition (optional — leave blank to look up online)"/>
-      <div class="row"><button class="act b-show" onclick="addWord()">Add word</button></div>
-      <p class="small" style="margin-top:14px">Tip: if you leave the definition blank and you're on WiFi, Vokab will try to fetch one for you automatically.</p>
-    </div>
-    <div class="card">
-      <h3 style="margin-top:0">📦 Word packs</h3>
-      ${Object.keys(PACKS).map(name=>`<div class="listitem">
-          <div>${name}<span class="tag">${PACKS[name].length} words</span></div>
-          <button class="addbar" style="background:var(--accent);color:#0c1024;border:none;border-radius:10px;padding:6px 14px;font-weight:600;cursor:pointer;margin:0" onclick="loadPack('${name}')">Load</button>
-        </div>`).join('')}
-      <p class="small" style="margin-top:10px">Loading a pack adds its words (skips any you already have), each with definition + root.</p>
-    </div>
-    <div class="card">
-      <h3 style="margin-top:0">Bulk add / make your own list</h3>
-      <textarea id="bulk" style="width:100%;min-height:100px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;font-family:inherit" placeholder="One word per line, e.g.&#10;ubiquitous&#10;candid = honest and direct&#10;resilient | able to recover quickly | Latin resilire = bounce back"></textarea>
-      <div class="row"><button class="act b-ghost" onclick="bulkAdd()">Add all</button></div>
-      <p class="small" style="margin-top:10px;line-height:1.7">Each line = one word. Add the meaning yourself, or leave it blank to look it up online:<br>
-        • <b>word</b> — just the word<br>
-        • <b>word = definition</b><br>
-        • <b>word | definition | root note</b></p>
-    </div>
-    <div class="card">
-      <h3 style="margin-top:0">💾 Backup / move your words (file)</h3>
-      <p class="small" style="margin-top:0">Save everything (words + progress) to a file you can keep or copy to another phone, then load it back later.</p>
-      <div class="row">
-        <button class="act b-ghost" onclick="exportWords()">⬇️ Save to file</button>
-        <button class="act b-ghost" onclick="document.getElementById('impfile').click()">⬆️ Load from file</button>
-      </div>
-      <input id="impfile" type="file" accept=".json,application/json" style="display:none" onchange="importFile(this)" />
-      <p class="small" style="margin-top:10px">It’s a plain-text <b>.json</b> file. Loading adds any words you don’t already have and keeps your current progress.</p>
-    </div>
-    `;
-}
-async function lookupDef(word){
-  try{
-    const r=await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`).then(r=>r.json());
-    const m=r&&r[0]&&r[0].meanings&&r[0].meanings[0];
-    if(m){ return {pos:m.partOfSpeech||'', def:(m.definitions[0]&&m.definitions[0].definition)||''}; }
-  }catch(e){}
-  return {pos:'',def:''};
-}
-async function addWord(){
-  const w=document.getElementById('nw').value.trim().toLowerCase();
-  let d=document.getElementById('nd').value.trim();
-  if(!w) return;
-  let pos='';
-  if(!d){ const r=await lookupDef(w); d=r.def; pos=r.pos; }
-  DB.cards.push(Object.assign(seedToCard({w,def:d,pos}),{}));
-  save(DB); flash('Added ✓'); go('browse');
-}
-// a bulk line can be: "word"  |  "word = definition"  |  "word | definition | root"
-function parseLine(line){
-  if(line.includes('|')){ const p=line.split('|').map(s=>s.trim()); return {w:p[0], def:p[1]||'', root:p[2]||''}; }
-  const m=line.match(/^([A-Za-z][A-Za-z '\-]*?)\s*[:=]\s*(.+)$/);
-  if(m) return {w:m[1].trim(), def:m[2].trim(), root:''};
-  return {w:line.trim(), def:'', root:''};
-}
-async function bulkAdd(){
-  const lines=document.getElementById('bulk').value.split('\n').map(x=>x.trim()).filter(Boolean);
-  let added=0;
-  for(const line of lines){
-    const e=parseLine(line); const w=e.w.toLowerCase(); if(!w) continue;
-    if(DB.cards.some(c=>c.w===w)) continue;
-    let def=e.def, pos='';
-    if(!def){ const r=await lookupDef(w); def=r.def; pos=r.pos; }
-    DB.cards.push(seedToCard({w, def, pos, root:e.root}));
-    added++;
-  }
-  save(DB); flash(`Added ${added} ✓`); go('browse');
-}
-
-// ---- backup / transfer as a plain-text .json file ----
-function exportWords(){
-  const data=JSON.stringify({app:'vokab', v:1, exported:Date.now(), cards:DB.cards}, null, 2);
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([data],{type:'application/json'}));
-  a.download='vokab-words.json'; a.click(); URL.revokeObjectURL(a.href);
-  flash('Saved file ✓');
-}
-function importFile(input){
-  const f=input.files&&input.files[0]; if(!f) return;
-  const r=new FileReader(); r.onload=()=>{ importJSON(r.result); input.value=''; }; r.readAsText(f);
-}
-function importJSON(str){
-  let data; try{ data=JSON.parse(str); }catch(e){ flash('That file isn’t valid'); return; }
-  const arr=Array.isArray(data)?data:(data.cards||[]);
-  let added=0;
-  for(const e of arr){
-    const w=(e.w||'').toLowerCase().trim(); if(!w || DB.cards.some(c=>c.w===w)) continue;
-    const card=seedToCard({w, pos:e.pos, def:e.def, root:e.root});
-    ['ease','interval','reps','due','lapses','sentence','freq'].forEach(k=>{ if(e[k]!=null) card[k]=e[k]; }); // keep progress if present
-    DB.cards.push(card); added++;
-  }
-  save(DB); flash(`Imported ${added} ✓`); go('browse');
-}
-
-function loadPack(name){
-  const pack=PACKS[name]||[]; let added=0;
-  for(const e of pack){ if(DB.cards.some(c=>c.w===e.w)) continue; DB.cards.push(seedToCard(e)); added++; }
-  save(DB); flash(`Added ${added} new words ✓`); go('browse');
 }
 
 function flash(msg){
@@ -521,372 +412,6 @@ function flash(msg){
   f.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--accent);color:#0c1024;padding:8px 16px;border-radius:999px;font-weight:600;z-index:99';
   document.body.appendChild(f); setTimeout(()=>f.remove(),1200);
 }
-
-/* ==========================================================
-   Word-web graph  — every word a node, linked by how related
-   their meanings are (shared definition words + shared roots).
-   Pure canvas + a tiny force simulation. Offline, no deps.
-==========================================================*/
-
-// words too common to count as a "link" between two definitions
-const STOP=new Set(("a an the to of or and but in on for with within without not no nor by as at be is are was were "+
- "that which who whom whose this these those it its their them they you your our we us i me my "+
- "very often especially usually etc more most less than then way ways thing things make makes made making "+
- "do does done doing person persons people someone something somebody being having show shows showing "+
- "able like such over under into onto from out off up down about after before when while where what how "+
- "all any each every other others another only also just so too can may might will would should could "+
- "one two get gets got give given gives take taken takes put puts used use uses using kind kinds sort "+
- "type types full lack lacks lacking quality state states act acts action actions manner toward towards "+
- "latin greek french italian spanish german old english anglo norse imitative likely probably perhaps "+
- "origin root word words family meaning real really often himself herself oneself").split(/\s+/));
-
-function netToks(str){               // -> array of meaningful tokens
-  if(!str) return [];
-  const clean=str.replace(/<[^>]*>/g,' ').replace(/[^a-zA-Z\s-]/g,' ').toLowerCase();
-  return clean.split(/[\s-]+/).filter(t=>t.length>=4 && !STOP.has(t));
-}
-
-function buildGraph(){
-  const cards=DB.cards;
-  const nodes=cards.map((c,i)=>({
-    id:c.id, i, w:c.w, c, ghost:false, rel:undefined, from:null,
-    defT:new Set(netToks(c.def+' '+c.pos)),
-    rootT:new Set(netToks(c.root)),
-    x:0,y:0,vx:0,vy:0,fx:0,fy:0
-  }));
-  // initial layout: a circle, so the sim opens up smoothly
-  const R=Math.max(120, nodes.length*9);
-  nodes.forEach((n,k)=>{ const a=k/nodes.length*Math.PI*2; n.x=Math.cos(a)*R; n.y=Math.sin(a)*R; });
-
-  // candidate links: weight = shared def words + 2× shared root words
-  const cand=[];
-  const inter=(A,B)=>{ let s=0; for(const t of A) if(B.has(t)) s++; return s; };
-  for(let a=0;a<nodes.length;a++) for(let b=a+1;b<nodes.length;b++){
-    const w=inter(nodes[a].defT,nodes[b].defT) + 2*inter(nodes[a].rootT,nodes[b].rootT);
-    if(w>0) cand.push({a,b,w});
-  }
-  cand.sort((x,y)=>y.w-x.w);
-
-  // keep strong links (w>=2), capped to ~4 per node to avoid a hairball
-  const deg=new Array(nodes.length).fill(0), edges=[], seen=new Set();
-  const key=(a,b)=>a<b?a+'-'+b:b+'-'+a;
-  for(const e of cand){
-    if(e.w<2) continue;
-    if(deg[e.a]>=4 || deg[e.b]>=4) continue;
-    if(seen.has(key(e.a,e.b))) continue;
-    seen.add(key(e.a,e.b)); edges.push(e); deg[e.a]++; deg[e.b]++;
-  }
-  // rescue: give any still-isolated word its single best partner (w>=1)
-  for(const e of cand){
-    if(deg[e.a]>0 && deg[e.b]>0) continue;
-    if(seen.has(key(e.a,e.b))) continue;
-    seen.add(key(e.a,e.b)); edges.push(e); deg[e.a]++; deg[e.b]++;
-  }
-  // adjacency (for highlight on select)
-  const adj={}; nodes.forEach(n=>adj[n.id]=new Set());
-  for(const e of edges){ adj[nodes[e.a].id].add(nodes[e.b].id); adj[nodes[e.b].id].add(nodes[e.a].id); }
-  return {nodes, edges, adj};
-}
-
-function netColor(c){
-  if(c.reps===0) return '#9aa3c7';            // new (grey)
-  if(c.due<=Date.now()) return '#fb7185';     // due to review (red)
-  if(c.interval>=21) return '#34d399';        // well learned (green)
-  return '#22d3ee';                           // learning (cyan)
-}
-// node radius by how COMMON the word is in real life (freq = uses per million)
-function nodeR(n){
-  const f = n.ghost ? n.freq : (n.c ? n.c.freq : null);
-  if(f==null) return n.ghost?6:7;             // commonness not known yet
-  return 5 + Math.min(16, Math.log10(f+1)*6); // common words → bigger
-}
-
-let net=null;
-function renderWeb(){
-  const m=document.getElementById('main');
-  if(DB.cards.length<2){
-    m.innerHTML=`<div class="done"><div class="big">🕸️</div><h2>Your word-web</h2>
-      <p>Add a few words (Add tab) and they'll appear here as a web — words with related
-      meanings or shared roots get linked together.</p></div>`;
-    return;
-  }
-  m.innerHTML=`<div class="webwrap">
-    <canvas id="net"></canvas>
-    <div class="legend">
-      <b style="color:var(--muted)">colour = progress</b><br>
-      <i style="background:#9aa3c7"></i>new<br>
-      <i style="background:#22d3ee"></i>learning<br>
-      <i style="background:#fb7185"></i>due now<br>
-      <i style="background:#34d399"></i>learned<br>
-      <span style="opacity:.85">size = how common</span>
-    </div>
-    <div class="netbtns">
-      <button onclick="netZoom(1.25)">＋</button>
-      <button onclick="netZoom(0.8)">－</button>
-      <button onclick="netReset()">⟳</button>
-    </div>
-    <div class="webhint">tap a word → 🔎 Related to grow the web · hollow rings = not in your deck · drag / pinch to move</div>
-  </div>`;
-  startNet();
-}
-
-const REP=2600, SPRING=0.018, LEN=72, GRAV=0.02, DAMP=0.82;
-function startNet(){
-  const cv=document.getElementById('net'); if(!cv) return;
-  const g=buildGraph();
-  net={...g, cv, ctx:cv.getContext('2d'), tf:{s:1,x:0,y:0}, sel:null,
-    cx:0, cy:0, alpha:1, raf:null, dragNode:null, dragging:false, pinching:false,
-    pointers:new Map(), pinchStart:null, moved:0, downId:null, dpr:Math.min(devicePixelRatio||1,2)};
-  net.ekeys=new Set(); for(const e of net.edges) net.ekeys.add(ekey(e.a,e.b));
-  sizeNet();
-  // center the canvas origin on the middle of the view
-  net.tf.x=net.cx; net.tf.y=net.cy;
-  bindNet();
-  window.addEventListener('resize', sizeNet);
-  net.raf=requestAnimationFrame(frameNet);
-  ensureFreqs();                       // size nodes by real-world commonness (online, cached after)
-}
-// fetch+cache word frequency for any deck words that don't have it yet
-async function ensureFreqs(){
-  const todo=DB.cards.filter(c=>c.freq==null);
-  if(!todo.length) return;
-  let i=0;
-  const worker=async()=>{ while(net && i<todo.length){ const c=todo[i++]; const f=await getFreq(c.w); if(f!=null) c.freq=f; } };
-  await Promise.all([worker(),worker(),worker(),worker(),worker(),worker()]); // 6 at a time
-  if(!net) return; save(DB); drawNet();
-}
-function stopNet(){
-  if(!net) return;
-  if(net.raf) cancelAnimationFrame(net.raf);
-  window.removeEventListener('resize', sizeNet);
-  net=null;
-}
-function sizeNet(){
-  if(!net) return; const cv=net.cv;
-  const w=cv.clientWidth, h=cv.clientHeight;
-  net.cx=w/2; net.cy=h/2;
-  cv.width=w*net.dpr; cv.height=h*net.dpr;
-  drawNet();
-}
-
-// --- coordinate helpers (screen<->world, in CSS pixels) ---
-function s2w(sx,sy){ const t=net.tf; return {x:(sx-t.x)/t.s, y:(sy-t.y)/t.s}; }
-function nodeAt(sx,sy){
-  const p=s2w(sx,sy); let best=null,bd=1e9;
-  for(const n of net.nodes){ const dx=n.x-p.x, dy=n.y-p.y, d=dx*dx+dy*dy;
-    if(d<bd){bd=d;best=n;} }
-  const r=(14/net.tf.s); if(best && bd<=r*r) return best; return null;
-}
-
-// --- physics ---
-function frameNet(){
-  tickNet(); drawNet();
-  net.raf=(net.alpha>0.02 || net.dragging || net.pinching)?requestAnimationFrame(frameNet):null;
-}
-function reheat(a){ if(!net) return; net.alpha=Math.max(net.alpha,a); if(!net.raf) net.raf=requestAnimationFrame(frameNet); }
-function tickNet(){
-  const n=net.nodes, A=net.alpha;
-  for(const a of n){ a.fx=0; a.fy=0; }
-  for(let i=0;i<n.length;i++) for(let j=i+1;j<n.length;j++){
-    const a=n[i],b=n[j]; let dx=a.x-b.x,dy=a.y-b.y; let d=Math.sqrt(dx*dx+dy*dy)||0.1;
-    const f=REP/(d*d)*A, fx=f*dx/d, fy=f*dy/d;
-    a.fx+=fx; a.fy+=fy; b.fx-=fx; b.fy-=fy;
-  }
-  for(const e of net.edges){
-    const a=n[e.a],b=n[e.b]; let dx=b.x-a.x,dy=b.y-a.y; let d=Math.sqrt(dx*dx+dy*dy)||0.1;
-    const f=(d-LEN)*SPRING*Math.min(e.w,4)*A, fx=f*dx/d, fy=f*dy/d;
-    a.fx+=fx; a.fy+=fy; b.fx-=fx; b.fy-=fy;
-  }
-  for(const a of n){ a.fx+=(-a.x)*GRAV*A; a.fy+=(-a.y)*GRAV*A; }   // pull toward origin (center)
-  for(const a of n){
-    if(a===net.dragNode) continue;
-    a.vx=(a.vx+a.fx)*DAMP; a.vy=(a.vy+a.fy)*DAMP;
-    a.x+=a.vx; a.y+=a.vy;
-  }
-  net.alpha*=0.985;
-}
-
-// --- drawing ---
-const relColor={syn:'#34d399',ant:'#fb7185',col:'#7c83ff'};   // synonym / opposite / collocation
-function drawNet(){
-  if(!net) return; const ctx=net.ctx, t=net.tf, d=net.dpr;
-  ctx.setTransform(d,0,0,d,0,0);
-  ctx.clearRect(0,0,net.cv.width,net.cv.height);
-  ctx.translate(t.x,t.y); ctx.scale(t.s,t.s);
-  const sel=net.sel;
-  let adj=null;
-  if(sel){ adj=new Set(); for(const e of net.edges){ const a=net.nodes[e.a],b=net.nodes[e.b];
-    if(a===sel)adj.add(b.id); else if(b===sel)adj.add(a.id); } }
-  // edges
-  for(const e of net.edges){
-    const a=net.nodes[e.a], b=net.nodes[e.b];
-    const hot=sel && (a===sel||b===sel);
-    ctx.globalAlpha = sel ? (hot?0.95:0.05) : (e.rel?0.55:0.5);
-    ctx.strokeStyle = e.rel?relColor[e.rel]:`rgba(124,131,255,${0.3+Math.min(e.w,5)*0.08})`;
-    ctx.lineWidth=(hot?2:1)/t.s;
-    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
-  }
-  ctx.globalAlpha=1;
-  // nodes
-  const showAll = t.s>=1.15 || net.nodes.length<=22;
-  for(const n of net.nodes){
-    const r = nodeR(n);
-    const dim = sel && n!==sel && !(adj&&adj.has(n.id));
-    ctx.globalAlpha = dim?0.22:1;
-    const col = n.ghost?relColor[n.rel]:netColor(n.c);
-    ctx.beginPath(); ctx.arc(n.x,n.y,r,0,Math.PI*2);
-    if(n.ghost){ ctx.fillStyle='#0f1220'; ctx.fill(); ctx.lineWidth=2/t.s; ctx.strokeStyle=col; ctx.stroke(); }
-    else { ctx.fillStyle=col; ctx.fill(); }
-    if(n===sel){ ctx.strokeStyle='#fff'; ctx.lineWidth=2.5/t.s; ctx.stroke(); }
-    if(showAll || n===sel || (adj&&adj.has(n.id))){
-      ctx.globalAlpha = dim?0.22:1;
-      ctx.fillStyle = n.ghost?col:'#eef1ff';
-      ctx.font=`${(n.ghost?11:12)/t.s}px -apple-system,Segoe UI,Roboto,sans-serif`;
-      ctx.textAlign='center'; ctx.textBaseline='top';
-      ctx.fillText(n.w, n.x, n.y+r+2);
-    }
-  }
-  ctx.globalAlpha=1;
-}
-
-// --- zoom buttons ---
-function netZoom(f){ if(!net) return; const t=net.tf;
-  const wx=(net.cx-t.x)/t.s, wy=(net.cy-t.y)/t.s;
-  t.s=Math.max(0.3,Math.min(4,t.s*f)); t.x=net.cx-wx*t.s; t.y=net.cy-wy*t.s; drawNet();
-}
-function netReset(){ if(!net) return; net.tf={s:1,x:net.cx,y:net.cy}; net.sel=null; closePanel(); reheat(0.6); }
-
-// --- selection panel ---
-const relLabel={syn:'synonym',ant:'opposite',col:'often follows'};
-const ghostBtn='background:var(--card2);color:var(--ink);border:1px solid var(--line);margin-top:0';
-function netSelect(n){
-  net.sel=n; drawNet();
-  let p=document.getElementById('netpanel');
-  if(!p){ p=document.createElement('div'); p.id='netpanel'; p.className='netpanel';
-    document.querySelector('.webwrap').appendChild(p); }
-  if(n.ghost){
-    p.innerHTML=`<span class="x" onclick="closePanel()">✕</span>
-      <div class="w">${n.w}</div>
-      <div class="p">${relLabel[n.rel]||'related'}${n.from?` of “${n.from}”`:''} · not in your words yet</div>
-      <div class="d" style="color:var(--muted)">Add it to your deck (a definition is fetched online), or keep exploring its links.</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:11px">
-        <button class="go" style="margin-top:0" onclick="addGhost('${n.id}')">➕ Add to my words</button>
-        <button class="go" style="${ghostBtn}" onclick="expandNode('${n.id}')">🔎 Related</button>
-      </div>`;
-  } else {
-    const c=n.c;
-    p.innerHTML=`<span class="x" onclick="closePanel()">✕</span>
-      <div class="w">${c.w}</div>
-      ${c.pos?`<div class="p">${c.pos}</div>`:''}
-      <div class="d">${c.def||'<span style="color:var(--muted)">no definition yet</span>'}</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:11px">
-        <button class="go" style="margin-top:0" onclick="netStudy('${c.id}')">Study this →</button>
-        <button class="go" style="${ghostBtn}" onclick="expandNode('${n.id}')">🔎 Related</button>
-      </div>`;
-  }
-}
-function closePanel(){ const p=document.getElementById('netpanel'); if(p) p.remove(); if(net){ net.sel=null; drawNet(); } }
-function netStudy(id){
-  const c=DB.cards.find(x=>x.id===id); if(!c) return;
-  c.due=Date.now(); save(DB);          // make it due so Study shows it next
-  go('study');
-}
-
-// --- live exploration via Datamuse (real synonyms/opposites/collocations) ---
-function ekey(a,b){ return a<b?a+'_'+b:b+'_'+a; }
-function addEdge(na,nb,w,rel){ const k=ekey(na.i,nb.i); if(net.ekeys.has(k)) return;
-  net.ekeys.add(k); net.edges.push({a:na.i,b:nb.i,w,rel}); }
-
-async function expandNode(id){
-  if(!net) return;
-  const node=net.nodes.find(n=>n.id===id); if(!node) return;
-  flash('Loading related words…');
-  const data=await fetchWeb(node.w);
-  if(!net) return;                      // user left the tab while loading
-  if(data.offline){ flash('Offline — connect to WiFi to explore'); return; }
-  let added=0;
-  for(const [rel,arr] of [['syn',data.syn],['ant',data.ant],['col',data.col]])
-    for(const w of (arr||[])){
-      const ex=net.nodes.find(n=>n.w===w);
-      if(ex){ if(ex!==node) addEdge(node,ex, ex.ghost?2:3, ex.ghost?rel:undefined); continue; }
-      const ng={ id:'g:'+w, i:net.nodes.length, w, ghost:true, rel, from:node.w, c:null,
-        freq:(freqCache[w]!=null?freqCache[w]:null), defT:new Set(), rootT:new Set(),
-        x:node.x+(Math.random()-.5)*70, y:node.y+(Math.random()-.5)*70, vx:0,vy:0,fx:0,fy:0 };
-      net.nodes.push(ng); addEdge(node,ng,2,rel); added++;
-    }
-  reheat(0.7);
-  flash(added?`+${added} related words`:'No new links found');
-}
-
-async function addGhost(id){
-  if(!net) return;
-  const node=net.nodes.find(n=>n.id===id); if(!node||!node.ghost) return;
-  flash('Adding…');
-  let card=DB.cards.find(c=>c.w===node.w);
-  if(!card){ const r=await lookupDef(node.w); if(!net) return;
-    card=seedToCard({w:node.w, def:r.def, pos:r.pos});
-    if(node.freq!=null) card.freq=node.freq;
-    DB.cards.push(card); save(DB); }
-  node.ghost=false; node.c=card; node.rel=undefined;
-  node.defT=new Set(netToks(card.def+' '+card.pos)); node.rootT=new Set();
-  renderStats(); netSelect(node);       // panel refreshes as a real, studyable word
-  flash('Added ✓');
-}
-
-// --- pointer interaction (drag / pan / pinch / tap) ---
-function bindNet(){
-  const cv=net.cv;
-  cv.addEventListener('pointerdown',e=>{
-    cv.setPointerCapture(e.pointerId);
-    net.pointers.set(e.pointerId,{x:e.offsetX,y:e.offsetY});
-    net.moved=0;
-    if(net.pointers.size===1){
-      const n=nodeAt(e.offsetX,e.offsetY);
-      net.downId=n?n.id:'__bg__';
-      if(n){ net.dragNode=n; net.dragging=true; }
-      else { net.panning=true; net.last={x:e.offsetX,y:e.offsetY}; }
-    } else if(net.pointers.size===2){
-      net.dragNode=null; net.dragging=false; net.panning=false; net.pinching=true;
-      const pts=[...net.pointers.values()];
-      const mid={x:(pts[0].x+pts[1].x)/2,y:(pts[0].y+pts[1].y)/2};
-      net.pinchStart={dist:dist2(pts[0],pts[1]), s:net.tf.s, world:s2w(mid.x,mid.y)};
-    }
-  });
-  cv.addEventListener('pointermove',e=>{
-    const pr=net.pointers.get(e.pointerId); if(!pr) return;
-    const px=e.offsetX, py=e.offsetY; net.moved+=Math.abs(px-pr.x)+Math.abs(py-pr.y);
-    pr.x=px; pr.y=py;
-    if(net.pinching && net.pointers.size>=2){
-      const pts=[...net.pointers.values()];
-      const mid={x:(pts[0].x+pts[1].x)/2,y:(pts[0].y+pts[1].y)/2};
-      const ps=net.pinchStart;
-      net.tf.s=Math.max(0.3,Math.min(4, ps.s*dist2(pts[0],pts[1])/ps.dist));
-      net.tf.x=mid.x-ps.world.x*net.tf.s; net.tf.y=mid.y-ps.world.y*net.tf.s;
-      drawNet();
-    } else if(net.dragNode){
-      const w=s2w(px,py); net.dragNode.x=w.x; net.dragNode.y=w.y;
-      net.dragNode.vx=0; net.dragNode.vy=0; reheat(0.35);
-    } else if(net.panning){
-      net.tf.x+=px-net.last.x; net.tf.y+=py-net.last.y; net.last={x:px,y:py}; drawNet();
-    }
-  });
-  const end=e=>{
-    net.pointers.delete(e.pointerId);
-    if(net.moved<6 && net.pointers.size===0){          // a tap, not a drag
-      if(net.downId && net.downId!=='__bg__'){ const n=net.nodes.find(x=>x.id===net.downId); if(n) netSelect(n); }
-      else closePanel();
-    }
-    if(net.pointers.size<2) net.pinching=false;
-    if(net.pointers.size===0){ net.dragNode=null; net.dragging=false; net.panning=false; }
-  };
-  cv.addEventListener('pointerup',end);
-  cv.addEventListener('pointercancel',end);
-  cv.addEventListener('wheel',e=>{ e.preventDefault();
-    const t=net.tf, w=s2w(e.offsetX,e.offsetY), f=e.deltaY<0?1.1:0.9;
-    t.s=Math.max(0.3,Math.min(4,t.s*f)); t.x=e.offsetX-w.x*t.s; t.y=e.offsetY-w.y*t.s; drawNet();
-  },{passive:false});
-}
-function dist2(a,b){ return Math.hypot(a.x-b.x,a.y-b.y); }
 
 render();
 </script>
