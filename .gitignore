@@ -1,11 +1,7 @@
-# Local Claude Code settings — not part of the app
-.claude/
-
-# Teacher's slide screenshots — already OCR'd into the app, not needed in the public repo
-images/
-
-# Personal project notes (notes to Claude) — keep private, not on the public repo
-CLAUDE.md
-
-# Internal check file from the syntax-check command
+dist/
+node_modules/
 ._check.js
+fetch_defs.js
+packs_with_defs.json
+.DS_Store
+*.log

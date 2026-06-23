@@ -1,0 +1,1608 @@
+{
+  "Vocab by P'N": [
+    {
+      "th": "ตรวจสอบ",
+      "pos": "v",
+      "groups": [
+        [
+          "check",
+          "in'spect",
+          "in'vestigate",
+          "ex'amine",
+          "'scrutinize"
+        ]
+      ],
+      "definition": "A situation in which the king is directly threatened by an opposing piece.",
+      "example": ""
+    },
+    {
+      "th": "ศึกษา",
+      "pos": "v",
+      "groups": [
+        [
+          "'study",
+          "probe"
+        ],
+        [
+          "delve",
+          "ex'amine",
+          "in'vestigate",
+          "ex'plore"
+        ]
+      ],
+      "definition": "(usually academic) To review materials already learned in order to make sure one does not forget them, usually in preparation for an examination.",
+      "example": "I need to study my biology notes."
+    },
+    {
+      "th": "จัดการ, รับมือ",
+      "pos": "v",
+      "groups": [
+        [
+          "ad'dress",
+          "at'tend to"
+        ],
+        [
+          "'handle",
+          "'tackle"
+        ],
+        [
+          "deal (+with)",
+          "cope (+with)",
+          "'grapple (+with)"
+        ]
+      ],
+      "definition": "Direction.",
+      "example": ""
+    },
+    {
+      "th": "เดา",
+      "pos": "v",
+      "groups": [
+        [
+          "guess",
+          "'speculate",
+          "con'jecture",
+          "sur'mise"
+        ]
+      ],
+      "definition": "To reach a partly (or totally) unqualified conclusion.",
+      "example": ""
+    },
+    {
+      "th": "บอกเป็นนัย",
+      "pos": "v",
+      "groups": [
+        [
+          "hint",
+          "sug'gest",
+          "in'sinuate",
+          "im'ply"
+        ]
+      ],
+      "definition": "A clue.",
+      "example": "I needed a hint to complete the crossword."
+    },
+    {
+      "th": "ทำนาย, พยากรณ์, คาดคะเน, คาดการณ์",
+      "pos": "v",
+      "groups": [
+        [
+          "pre'dict",
+          "ex'pect",
+          "pro'ject",
+          "en'vision",
+          "en'visage"
+        ],
+        [
+          "an'ticipate",
+          "'prophesy"
+        ],
+        [
+          "fore'see",
+          "'forecast",
+          "fore'tell"
+        ]
+      ],
+      "definition": "A prediction.",
+      "example": ""
+    },
+    {
+      "th": "ครุ่นคิด, พิจารณา",
+      "pos": "v",
+      "groups": [
+        [
+          "'ponder",
+          "'contemplate"
+        ],
+        [
+          "mull (over)",
+          "muse (on)",
+          "'meditate (on)"
+        ],
+        [
+          "dwell (on)",
+          "brood (on)",
+          "'ruminate (on)"
+        ],
+        [
+          "re'flect (on)",
+          "'cogitate (on)",
+          "de'liberate (about)",
+          "think about"
+        ]
+      ],
+      "definition": "A period of deep thought.",
+      "example": "I lit my pipe and had a ponder about it, but reached no definite conclusion."
+    },
+    {
+      "th": "อธิบาย (ให้ชัดเจนขึ้น)",
+      "pos": "v",
+      "groups": [
+        [
+          "ex'plain",
+          "ex'pound"
+        ],
+        [
+          "'explicate",
+          "e'laborate",
+          "e'lucidate"
+        ],
+        [
+          "'illustrate",
+          "de'lineate",
+          "'clarify"
+        ]
+      ],
+      "definition": "To make plain, manifest, or intelligible; to clear of obscurity; to illustrate the meaning of.",
+      "example": "To explain a chapter of the Bible."
+    },
+    {
+      "th": "เสริม, เสริมให้แข็งแรงขึ้น",
+      "pos": "v",
+      "groups": [
+        [
+          "'strengthen",
+          "shore up",
+          "'bolster up",
+          "'buttress"
+        ],
+        [
+          "up'hold",
+          "ce'ment",
+          "rein'force",
+          "'fortify"
+        ]
+      ],
+      "definition": "To make strong or stronger; to add strength to; to increase the strength of; to fortify.",
+      "example": "strengthen a muscle"
+    },
+    {
+      "th": "โน้มน้าว",
+      "pos": "v",
+      "groups": [
+        [
+          "prod",
+          "in'duce",
+          "per'suade",
+          "con'vince"
+        ],
+        [
+          "'wheedle",
+          "ca'jole",
+          "coax",
+          "'influence",
+          "sway"
+        ]
+      ],
+      "definition": "A device (now often electrical) used to goad livestock into moving.",
+      "example": ""
+    },
+    {
+      "th": "ปลูกฝัง",
+      "pos": "v",
+      "groups": [
+        [
+          "en'trench",
+          "in'grain",
+          "'brainwash"
+        ],
+        [
+          "'inculcate",
+          "in'doctrinate",
+          "im'plant",
+          "in'still"
+        ]
+      ],
+      "definition": "To dig or excavate a trench; to trench.",
+      "example": ""
+    },
+    {
+      "th": "ยกย่อง, ชื่นชม",
+      "pos": "v",
+      "groups": [
+        [
+          "praise",
+          "rave",
+          "laud",
+          "ap'plaud",
+          "'compliment",
+          "com'mend"
+        ],
+        [
+          "ex'tol",
+          "ex'alt",
+          "ac'claim",
+          "ad'mire"
+        ],
+        [
+          "hail",
+          "'glorify",
+          "'eulogize"
+        ],
+        [
+          "'idolize",
+          "'lionize"
+        ],
+        [
+          "'adulate",
+          "'venerate",
+          "'worship",
+          "re'vere"
+        ]
+      ],
+      "definition": "Commendation; favourable representation in words",
+      "example": ""
+    },
+    {
+      "th": "สนับสนุน / พิสูจน์ (ว่าถูกต้อง / เป็นจริง)",
+      "pos": "v",
+      "groups": [
+        [
+          "prove",
+          "sup'port",
+          "con'firm",
+          "bear out"
+        ],
+        [
+          "'testify",
+          "'verify",
+          "'validate",
+          "'vindicate"
+        ],
+        [
+          "sub'stantiate",
+          "cor'roborate"
+        ]
+      ],
+      "definition": "To proofread.",
+      "example": ""
+    },
+    {
+      "th": "อนุมัติ",
+      "pos": "v",
+      "groups": [
+        [
+          "ap'prove",
+          "per'mit",
+          "en'dorse",
+          "al'low"
+        ],
+        [
+          "'ratify",
+          "'sanction",
+          "le'gitimize",
+          "'authorize",
+          "'license"
+        ]
+      ],
+      "definition": "To sanction officially; to ratify; to confirm; to set as satisfactory.",
+      "example": "Although we may disagree with it, we must nevertheless approve the sentence handed down by the court-martial."
+    },
+    {
+      "th": "ประเมิน, ประมาณ",
+      "pos": "v",
+      "groups": [
+        [
+          "gauge",
+          "rate",
+          "ap'praise",
+          "as'sess"
+        ],
+        [
+          "'estimate",
+          "e'valuate",
+          "size up"
+        ]
+      ],
+      "definition": "A measure; a standard of measure; an instrument to determine dimensions, distance, or capacity; a standard",
+      "example": ""
+    },
+    {
+      "th": "บั่นทอนทำลาย",
+      "pos": "v",
+      "groups": [
+        [
+          "'weaken",
+          "'compromise",
+          "sub'vert",
+          "under'mine",
+          "'damage"
+        ]
+      ],
+      "definition": "To make weaker or less strong.",
+      "example": ""
+    },
+    {
+      "th": "ดุด่า, ต่อว่า, วิพากษ์วิจารณ์",
+      "pos": "v",
+      "groups": [
+        [
+          "scold",
+          "be'rate",
+          "as'sail",
+          "di'sparage",
+          "con'demn",
+          "tell off",
+          "tick off"
+        ],
+        [
+          "'criticize",
+          "chas'tise",
+          "'castigate",
+          "'censure"
+        ],
+        [
+          "de'cry",
+          "de'nounce",
+          "'deprecate",
+          "de'plore"
+        ],
+        [
+          "re'buke",
+          "re'prove",
+          "re'proach",
+          "'reprimand"
+        ]
+      ],
+      "definition": "To burn with hot liquid.",
+      "example": "to scald the hand"
+    },
+    {
+      "th": "เยาะเย้ย, เย้ยหยัน, ล้อเลียน, ดูถูก",
+      "pos": "v",
+      "groups": [
+        [
+          "'ridicule",
+          "scorn",
+          "con'tempt (n)"
+        ],
+        [
+          "dis'dain",
+          "tease",
+          "taunt",
+          "mock",
+          "jeer (+at)",
+          "sneer (+at)",
+          "de'ride"
+        ]
+      ],
+      "definition": "Derision; mocking or humiliating words or behaviour",
+      "example": ""
+    },
+    {
+      "th": "ใส่ร้าย, หมิ่นประมาท",
+      "pos": "v",
+      "groups": [
+        [
+          "tra'duce",
+          "ma'lign"
+        ],
+        [
+          "'vilify",
+          "'libel"
+        ],
+        [
+          "de'fame",
+          "'slander"
+        ]
+      ],
+      "definition": "To malign a person or entity by making malicious and false or defamatory statements.",
+      "example": ""
+    },
+    {
+      "th": "แปดเปื้อนชื่อเสียง",
+      "pos": "v",
+      "groups": [
+        [
+          "taint",
+          "stain",
+          "smear",
+          "'tarnish"
+        ],
+        [
+          "de'file",
+          "'blemish",
+          "'stigmatize"
+        ]
+      ],
+      "definition": "A contamination, decay or putrefaction, especially in food",
+      "example": ""
+    },
+    {
+      "th": "โอ้อวด",
+      "pos": "v",
+      "groups": [
+        [
+          "brag",
+          "boast",
+          "crow",
+          "gloat",
+          "show off"
+        ]
+      ],
+      "definition": "A boast or boasting; bragging; ostentatious pretence or self-glorification.",
+      "example": ""
+    },
+    {
+      "th": "ปฏิเสธ",
+      "pos": "v",
+      "groups": [
+        [
+          "spurn",
+          "turn down"
+        ],
+        [
+          "dis'miss",
+          "de'ny",
+          "de'cline"
+        ],
+        [
+          "re'fuse",
+          "re'ject",
+          "re'pudiate",
+          "re'buff"
+        ]
+      ],
+      "definition": "An act of spurning; a scornful rejection.",
+      "example": ""
+    },
+    {
+      "th": "หักล้าง",
+      "pos": "v",
+      "groups": [
+        [
+          "dis'prove",
+          "de'bunk"
+        ],
+        [
+          "re'but",
+          "re'fute"
+        ],
+        [
+          "contra'dict",
+          "con'fute"
+        ]
+      ],
+      "definition": "To prove to be false or erroneous; to confute; to refute.",
+      "example": ""
+    },
+    {
+      "th": "ทำให้สับสน",
+      "pos": "v",
+      "groups": [
+        [
+          "be'wilder",
+          "per'plex",
+          "be'muse",
+          "con'fuse"
+        ],
+        [
+          "'flummox",
+          "'fuddle",
+          "'puzzle",
+          "'baffle"
+        ]
+      ],
+      "definition": "To confuse, disorientate, or puzzle someone, especially with many different choices.",
+      "example": "All the different possible options may bewilder us."
+    },
+    {
+      "th": "ทำให้อับอายขายหน้า",
+      "pos": "v",
+      "groups": [
+        [
+          "shame",
+          "'chasten"
+        ],
+        [
+          "a'bash",
+          "em'barrass",
+          "hu'miliate",
+          "'mortify"
+        ]
+      ],
+      "definition": "Uncomfortable or painful feeling due to recognition or consciousness of one's own impropriety or dishonor or something being exposed that should have been kept private.",
+      "example": "The teenager couldn’t bear the shame of introducing his parents."
+    },
+    {
+      "th": "ทำให้โกรธ, ทำให้หงุดหงิด",
+      "pos": "v",
+      "groups": [
+        [
+          "vex",
+          "irk",
+          "gall",
+          "pique",
+          "pro'voke",
+          "'incense"
+        ],
+        [
+          "'bother",
+          "'anger",
+          "an'noy",
+          "en'rage"
+        ],
+        [
+          "'irritate",
+          "in'furiate"
+        ],
+        [
+          "'aggravate",
+          "ex'asperate"
+        ]
+      ],
+      "definition": "A trouble.",
+      "example": ""
+    },
+    {
+      "th": "ยั่วยวน, ล่อลวง, ดึงดูด",
+      "pos": "v",
+      "groups": [
+        [
+          "tempt",
+          "lure",
+          "al'lure",
+          "at'tract"
+        ],
+        [
+          "en'tice",
+          "en'snare"
+        ],
+        [
+          "ap'peal (to)",
+          "'captivate",
+          "be'witch"
+        ]
+      ],
+      "definition": "To provoke someone to do wrong, especially by promising a reward; to entice.",
+      "example": "She tempted me to eat the apple."
+    },
+    {
+      "th": "ปิดบัง, ซ่อนเร้น",
+      "pos": "v",
+      "groups": [
+        [
+          "hide",
+          "mask",
+          "'cover",
+          "cloak",
+          "veil",
+          "shroud"
+        ],
+        [
+          "dis'guise",
+          "con'ceal",
+          "'camouflage",
+          "ob'scure"
+        ]
+      ],
+      "definition": "To put (something) in a place where it will be harder to discover or out of sight.",
+      "example": "He hides his magazines under the bed."
+    },
+    {
+      "th": "เปิดเผย",
+      "pos": "v",
+      "groups": [
+        [
+          "un'mask",
+          "un'veil",
+          "un'cover",
+          "un'fold"
+        ],
+        [
+          "re'veal",
+          "ex'pose",
+          "dis'close",
+          "di'vulge"
+        ]
+      ]
+    },
+    {
+      "th": "ใช้",
+      "pos": "v",
+      "groups": [
+        [
+          "use",
+          "'utilize",
+          "'harness",
+          "ap'ply",
+          "'implement"
+        ],
+        [
+          "de'ploy",
+          "em'ploy",
+          "ex'ploit",
+          "e'xert",
+          "'exercise"
+        ]
+      ]
+    },
+    {
+      "th": "ตัดสินใจ",
+      "pos": "v",
+      "groups": [
+        [
+          "re'solve",
+          "de'termine",
+          "de'cide"
+        ],
+        [
+          "make up one's mind",
+          "make a de'cision"
+        ]
+      ]
+    },
+    {
+      "th": "พยายาม",
+      "pos": "v",
+      "groups": [
+        [
+          "at'tempt",
+          "try... try",
+          "strive"
+        ],
+        [
+          "make an effort",
+          "seek - sought",
+          "'struggle",
+          "en'deavor"
+        ]
+      ]
+    },
+    {
+      "th": "ยอม, ยอมแพ้",
+      "pos": "v",
+      "groups": [
+        [
+          "ca'pitulate",
+          "sur'render"
+        ],
+        [
+          "sub'mit (to)",
+          "suc'cumb (to)"
+        ],
+        [
+          "re'lent",
+          "give in",
+          "give up",
+          "con'cede",
+          "yield to"
+        ]
+      ]
+    },
+    {
+      "th": "ละเว้น",
+      "pos": "v",
+      "groups": [
+        [
+          "ab'stain",
+          "re'frain",
+          "de'sist",
+          "for'bear"
+        ]
+      ]
+    },
+    {
+      "th": "ห้าม",
+      "pos": "v",
+      "groups": [
+        [
+          "ban",
+          "bar",
+          "for'bid"
+        ],
+        [
+          "pro'hibit",
+          "pro'scribe"
+        ]
+      ]
+    },
+    {
+      "th": "มองโลกในแง่ดี",
+      "pos": "adj",
+      "groups": [
+        [
+          "opti'mistic",
+          "'upbeat",
+          "'positive",
+          "'sanguine",
+          "'hopeful"
+        ]
+      ]
+    },
+    {
+      "th": "ละเอียดรอบคอบถี่ถ้วน",
+      "pos": "adj",
+      "groups": [
+        [
+          "'careful",
+          "consci'entious",
+          "'thorough"
+        ],
+        [
+          "me'ticulous",
+          "'scrupulous",
+          "fas'tidious",
+          "punc'tilious"
+        ],
+        [
+          "as'siduous",
+          "'painstaking"
+        ]
+      ]
+    },
+    {
+      "th": "รอบคอบ, ระมัดระวัง",
+      "pos": "adj",
+      "groups": [
+        [
+          "'wary (+of)",
+          "'chary (+about/of)",
+          "'careful",
+          "'cautious (+about)",
+          "'prudent",
+          "'circumspect"
+        ]
+      ]
+    },
+    {
+      "th": "ตื่นตัว, ระมัดระวัง",
+      "pos": "adj",
+      "groups": [
+        [
+          "a'lert",
+          "at'tentive",
+          "'watchful",
+          "'vigilant"
+        ]
+      ]
+    },
+    {
+      "th": "กระตือรือร้น, เอาจริงเอาจัง",
+      "pos": "adj",
+      "groups": [
+        [
+          "'ardent",
+          "'eager",
+          "keen",
+          "'avid"
+        ],
+        [
+          "dy'namic",
+          "ener'getic",
+          "enthusi'astic"
+        ],
+        [
+          "'earnest",
+          "'zealous"
+        ]
+      ]
+    },
+    {
+      "th": "มุ่งมั่น, แน่วแน่",
+      "pos": "adj",
+      "groups": [
+        [
+          "'dogged",
+          "te'nacious",
+          "de'termined"
+        ],
+        [
+          "'resolute",
+          "'adamant",
+          "in'sistent",
+          "per'sistent",
+          "perse'vering"
+        ]
+      ]
+    },
+    {
+      "th": "เคลือบแคลงสงสัย",
+      "pos": "adj",
+      "groups": [
+        [
+          "'skeptical",
+          "sus'picious",
+          "'dubious",
+          "'doubtful"
+        ]
+      ]
+    },
+    {
+      "th": "เข้มงวด, ไม่ผ่อนปรน",
+      "pos": "adj",
+      "groups": [
+        [
+          "harsh",
+          "tough",
+          "'drastic"
+        ],
+        [
+          "'rigid",
+          "'rigorous"
+        ],
+        [
+          "strict",
+          "stern",
+          "'stringent",
+          "aus'tere",
+          "se'vere",
+          "in'flexible"
+        ]
+      ]
+    },
+    {
+      "th": "รวย",
+      "pos": "adj",
+      "groups": [
+        [
+          "rich",
+          "'affluent",
+          "'opulent",
+          "'prosperous",
+          "'wealthy"
+        ],
+        [
+          "well-to-do",
+          "well-off",
+          "well-heeled"
+        ]
+      ]
+    },
+    {
+      "th": "ยากจน",
+      "pos": "adj",
+      "groups": [
+        [
+          "'destitute",
+          "'indigent"
+        ],
+        [
+          "'penniless",
+          "pe'nurious",
+          "im'poverished",
+          "poor"
+        ]
+      ]
+    },
+    {
+      "th": "ประหยัด, มัธยัสถ์",
+      "pos": "adj",
+      "groups": [
+        [
+          "'provident",
+          "'prudent"
+        ],
+        [
+          "'thrifty",
+          "'frugal",
+          "eco'nomical",
+          "'sparing"
+        ]
+      ]
+    },
+    {
+      "th": "ขี้เหนียว, ขี้งก",
+      "pos": "adj",
+      "groups": [
+        [
+          "'stingy",
+          "'mingy",
+          "mean",
+          "'miserly",
+          "parsi'monious"
+        ]
+      ]
+    },
+    {
+      "th": "เศร้าโศก",
+      "pos": "adj",
+      "groups": [
+        [
+          "glum",
+          "de'pressed",
+          "be'reft",
+          "'desolate",
+          "de'jected"
+        ],
+        [
+          "'dismal",
+          "'gloomy",
+          "'melancholy",
+          "'miserable"
+        ],
+        [
+          "sad",
+          "'wretched",
+          "for'lorn",
+          "mo'rose"
+        ],
+        [
+          "'sorrowful",
+          "'mournful",
+          "'woeful",
+          "'doleful"
+        ]
+      ]
+    },
+    {
+      "th": "หยิ่งยโส, โอหัง",
+      "pos": "adj",
+      "groups": [
+        [
+          "'arrogant",
+          "ego'tistic",
+          "hu'bristic"
+        ],
+        [
+          "vain",
+          "con'ceited",
+          "'snobbish",
+          "super'cilious"
+        ]
+      ]
+    },
+    {
+      "th": "เย่อหยิ่ง, อวดดี",
+      "pos": "adj",
+      "groups": [
+        [
+          "'haughty",
+          "'lofty",
+          "self-im'portant"
+        ]
+      ]
+    },
+    {
+      "th": "เจ้าเล่ห์, มีเล่ห์เหลี่ยม",
+      "pos": "adj",
+      "groups": [
+        [
+          "'artful",
+          "'cunning"
+        ],
+        [
+          "'crafty",
+          "'tricky",
+          "'sneaky",
+          "'wily"
+        ],
+        [
+          "slick",
+          "sly",
+          "'guileful"
+        ]
+      ]
+    },
+    {
+      "th": "ขี้เกียจ",
+      "pos": "adj",
+      "groups": [
+        [
+          "'idle",
+          "'lazy",
+          "'slothful",
+          "'indolent"
+        ]
+      ]
+    },
+    {
+      "th": "อ้วน",
+      "pos": "adj",
+      "groups": [
+        [
+          "plump",
+          "stout",
+          "'bulky"
+        ],
+        [
+          "'tubby",
+          "'chubby",
+          "'fleshy",
+          "'beefy"
+        ],
+        [
+          "o'bese",
+          "over'weight",
+          "'corpulent"
+        ]
+      ]
+    },
+    {
+      "th": "ไม่มั่นใจ",
+      "pos": "adj",
+      "groups": [
+        [
+          "un'sure",
+          "un'certain"
+        ],
+        [
+          "re'luctant",
+          "'hesitant",
+          "'tentative"
+        ]
+      ]
+    },
+    {
+      "th": "เป็นกลาง",
+      "pos": "adj",
+      "groups": [
+        [
+          "'neutral",
+          "de'tached",
+          "un'biased",
+          "non-'partisan"
+        ],
+        [
+          "ob'jective",
+          "im'partial",
+          "dis'passionate",
+          "dis'interested"
+        ]
+      ]
+    },
+    {
+      "th": "วิตกกังวล",
+      "pos": "adj",
+      "groups": [
+        [
+          "'worried",
+          "con'cerned",
+          "per'turbed",
+          "'nervous"
+        ],
+        [
+          "'anxious",
+          "un'easy",
+          "appre'hensive",
+          "'edgy (= on edge)"
+        ]
+      ]
+    },
+    {
+      "th": "ตั้งใจ, เจตนา",
+      "pos": "adj",
+      "groups": [
+        [
+          "'willful",
+          "'wanton"
+        ],
+        [
+          "in'tentional",
+          "vo'litional"
+        ],
+        [
+          "de'liberate",
+          "pre'meditated"
+        ]
+      ]
+    },
+    {
+      "th": "อัจฉริยะ",
+      "pos": "n",
+      "groups": [
+        [
+          "'prodigy",
+          "'genius",
+          "whiz",
+          "'mastermind"
+        ]
+      ]
+    },
+    {
+      "th": "เกลียด",
+      "pos": "v",
+      "groups": [
+        [
+          "loathe",
+          "hate",
+          "ab'hor",
+          "a'bominate"
+        ],
+        [
+          "'execrate",
+          "de'test",
+          "de'spise"
+        ]
+      ]
+    },
+    {
+      "th": "ความชอบ",
+      "pos": "n",
+      "groups": [
+        [
+          "'liking",
+          "'relish",
+          "'preference",
+          "'penchant"
+        ],
+        [
+          "predi'lection",
+          "'fondness",
+          "af'finity"
+        ]
+      ]
+    },
+    {
+      "th": "แนวโน้มที่จะทำบางอย่าง",
+      "pos": "n",
+      "groups": [
+        [
+          "bent",
+          "'leaning",
+          "incli'nation"
+        ],
+        [
+          "'tendency",
+          "pro'pensity",
+          "pro'clivity",
+          "predispo'sition"
+        ]
+      ]
+    },
+    {
+      "th": "มีแนวโน้ม",
+      "pos": "adj",
+      "groups": [
+        [
+          "apt",
+          "prone",
+          "'likely"
+        ],
+        [
+          "bound",
+          "'liable",
+          "in'clined"
+        ]
+      ]
+    },
+    {
+      "th": "มีเสน่ห์, น่าหลงใหล, น่าดึงดูดใจ",
+      "pos": "adj",
+      "groups": [
+        [
+          "at'tractive",
+          "charis'matic"
+        ],
+        [
+          "'charming",
+          "en'chanting",
+          "en'trancing",
+          "en'thralling"
+        ],
+        [
+          "al'luring",
+          "ap'pealing"
+        ],
+        [
+          "be'guiling",
+          "be'witching"
+        ],
+        [
+          "'captivating",
+          "'mesmerizing"
+        ]
+      ]
+    },
+    {
+      "th": "แปลก, ไม่ปกติ",
+      "pos": "adj",
+      "groups": [
+        [
+          "'funny",
+          "un'canny",
+          "freak",
+          "'freaky",
+          "'quirky"
+        ],
+        [
+          "'curious",
+          "queer",
+          "weird",
+          "'eerie"
+        ],
+        [
+          "quaint",
+          "pe'culiar",
+          "off'beat",
+          "bi'zarre"
+        ],
+        [
+          "ir'regular",
+          "ec'centric",
+          "odd",
+          "ab'normal"
+        ],
+        [
+          "strange",
+          "a'typical",
+          "a'nomalous",
+          "in'congruous"
+        ]
+      ]
+    },
+    {
+      "th": "น่าเบื่อ",
+      "pos": "adj",
+      "groups": [
+        [
+          "bland",
+          "ba'nal",
+          "'vapid"
+        ],
+        [
+          "in'sipid",
+          "pro'saic"
+        ],
+        [
+          "'lackluster",
+          "je'june"
+        ],
+        [
+          "dull",
+          "dry",
+          "'dreary"
+        ],
+        [
+          "'tedious",
+          "'tiresome"
+        ],
+        [
+          "'humdrum",
+          "mun'dane",
+          "'lifeless",
+          "mo'notonous"
+        ]
+      ]
+    },
+    {
+      "th": "เด่นชัด, โจ่งแจ้ง, สะดุดตา",
+      "pos": "adj",
+      "groups": [
+        [
+          "'manifest",
+          "'striking",
+          "out'standing"
+        ],
+        [
+          "ob'trusive",
+          "'obvious"
+        ],
+        [
+          "con'spicuous",
+          "'prominent",
+          "'evident",
+          "ap'parent",
+          "'salient"
+        ]
+      ]
+    },
+    {
+      "th": "ซับซ้อน",
+      "pos": "adj",
+      "groups": [
+        [
+          "com'plex",
+          "'complicated",
+          "'convoluted",
+          "in'volved"
+        ],
+        [
+          "'intricate",
+          "e'laborate",
+          "so'phisticated"
+        ]
+      ]
+    },
+    {
+      "th": "น่าตื่นตาตื่นใจ",
+      "pos": "adj",
+      "groups": [
+        [
+          "'splendid",
+          "spec'tacular",
+          "sen'sational"
+        ],
+        [
+          "ma'jestic",
+          "mag'nificent"
+        ],
+        [
+          "im'pressive",
+          "im'posing"
+        ],
+        [
+          "'stunning",
+          "'dazzling",
+          "'breathtaking",
+          "'awe-inspiring"
+        ]
+      ]
+    },
+    {
+      "th": "บอบบาง, เปราะบาง",
+      "pos": "adj",
+      "groups": [
+        [
+          "'brittle",
+          "'breakable"
+        ],
+        [
+          "frail",
+          "'fragile",
+          "'feeble",
+          "delicate"
+        ]
+      ],
+      "definition": "A confection of caramelized sugar and nuts.",
+      "example": "As a child, my favorite candy was peanut brittle."
+    },
+    {
+      "th": "ยืดหยุ่น, โค้งงอได้ง่าย",
+      "pos": "adj",
+      "groups": [
+        [
+          "'supple",
+          "e'lastic"
+        ],
+        [
+          "'flexible",
+          "'bendable",
+          "'pliable",
+          "'pliant"
+        ]
+      ],
+      "definition": "To make or become supple.",
+      "example": ""
+    },
+    {
+      "th": "ล้าสมัย",
+      "pos": "adj",
+      "groups": [
+        [
+          "out'dated",
+          "out'moded",
+          "'antiquated"
+        ],
+        [
+          "pas'sé",
+          "de'funct"
+        ],
+        [
+          "old-'fashioned",
+          "obso'lete",
+          "antedi'luvian"
+        ]
+      ],
+      "definition": "Out of date, old-fashioned, antiquated.",
+      "example": "His outdated wordprocessing software could not read the files I sent."
+    },
+    {
+      "th": "ปลอม, เก๊",
+      "pos": "adj",
+      "groups": [
+        [
+          "'counterfeit",
+          "fake",
+          "forged"
+        ],
+        [
+          "'phony",
+          "feigned",
+          "'bogus",
+          "sham"
+        ]
+      ],
+      "definition": "A non-genuine article; a fake.",
+      "example": ""
+    },
+    {
+      "th": "เล็ก",
+      "pos": "adj",
+      "groups": [
+        [
+          "'teeny",
+          "'weeny"
+        ],
+        [
+          "'tiny",
+          "mi'nute"
+        ],
+        [
+          "'minuscule",
+          "micro'scopic",
+          "infini'tesimal"
+        ]
+      ],
+      "definition": "Very small; tiny.",
+      "example": ""
+    },
+    {
+      "th": "สั้น, กระชับ",
+      "pos": "adj",
+      "groups": [
+        [
+          "short",
+          "brief",
+          "'pithy",
+          "suc'cinct",
+          "la'conic",
+          "terse"
+        ],
+        [
+          "con'cise",
+          "com'pact",
+          "con'densed"
+        ]
+      ],
+      "definition": "A short circuit.",
+      "example": ""
+    },
+    {
+      "th": "บังคับ, จำเป็น",
+      "pos": "adj",
+      "groups": [
+        [
+          "'necessary",
+          "'requisite",
+          "re'quired"
+        ],
+        [
+          "'mandatory",
+          "com'pulsory",
+          "ob'ligatory"
+        ]
+      ],
+      "definition": "(usually with the definite article) A place to do the \"necessary\" business of urination and defecation: an outhouse or lavatory.",
+      "example": ""
+    },
+    {
+      "th": "ถูกต้องตามกฎหมาย, ทางกฎหมาย",
+      "pos": "adj",
+      "groups": [
+        [
+          "'legal",
+          "'licit",
+          "'valid",
+          "le'gitimate",
+          "'lawful"
+        ]
+      ],
+      "definition": "The legal department of a company.",
+      "example": "Legal wants this in writing."
+    },
+    {
+      "th": "เสี่ยงต่อ",
+      "pos": "adj",
+      "groups": [
+        [
+          "'subject",
+          "ex'posed",
+          "prone"
+        ],
+        [
+          "sus'ceptible",
+          "'liable",
+          "'vulnerable"
+        ]
+      ],
+      "definition": "Likely to be affected by or to experience something.",
+      "example": "He's subject to sneezing fits."
+    },
+    {
+      "th": "แข็งแรง, ทน, ถึก",
+      "pos": "adj",
+      "groups": [
+        [
+          "'vigorous",
+          "ro'bust",
+          "tough",
+          "'rugged",
+          "'healthy",
+          "strong",
+          "'hardy"
+        ],
+        [
+          "'sturdy",
+          "fit",
+          "'lusty"
+        ]
+      ],
+      "definition": "Physically strong and active.",
+      "example": ""
+    },
+    {
+      "th": "มีมากเกิน, เกินความจำเป็น",
+      "pos": "adj",
+      "groups": [
+        [
+          "ex'cessive",
+          "'surplus",
+          "su'perfluous",
+          "re'dundant"
+        ]
+      ],
+      "definition": "Exceeding the usual bounds of something; extravagant; immoderate.",
+      "example": "Putting a wide vibrato on a single 16th triplet note at 160 beats per minute seems rather excessive."
+    },
+    {
+      "th": "มีมาแต่เกิด",
+      "pos": "adj",
+      "groups": [
+        [
+          "in'nate",
+          "in'born",
+          "in'bred",
+          "in'herent",
+          "in'trinsic"
+        ],
+        [
+          "con'genital",
+          "he'reditary"
+        ]
+      ],
+      "definition": "To cause to exist; to call into being.",
+      "example": ""
+    },
+    {
+      "th": "คุณลักษณะ, คุณสมบัติ",
+      "pos": "n",
+      "groups": [
+        [
+          "trait",
+          "'attribute",
+          "'property",
+          "'feature",
+          "characte'ristic"
+        ],
+        [
+          "quirk",
+          "'quality",
+          "idio'syncrasy"
+        ]
+      ],
+      "definition": "An identifying characteristic, habit or trend.",
+      "example": "The number one personality trait I hate is hypocrisy. Why can't you be consistent!?"
+    },
+    {
+      "th": "ข้อเสีย, ข้อบกพร่อง",
+      "pos": "n",
+      "groups": [
+        [
+          "flaw",
+          "fault",
+          "snag",
+          "'defect"
+        ],
+        [
+          "'downside",
+          "'drawback",
+          "disad'vantage",
+          "'shortcoming"
+        ]
+      ],
+      "definition": "A flake, fragment, or shiver.",
+      "example": ""
+    }
+  ]
+}
