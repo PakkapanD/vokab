@@ -279,6 +279,7 @@ function speak(t){ try{ const u=new SpeechSynthesisUtterance(t); u.lang='en-US';
 let STUDY_SAY=[];
 function speakWord(i){ if(STUDY_SAY[i]!=null) speak(STUDY_SAY[i]); }
 function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function disp(w){ return w.replace(/'(?!s\b)/g,''); } // strip pronunciation stress marks for display, keep real apostrophes (e.g. one's)
 
 // ---------- views ----------
 let view='packs';
@@ -347,7 +348,7 @@ function renderStudy(){
   STUDY_SAY=[];
   const tiersHtml = c.groups.map(g=>{
     const chips = g.map(w=>{ const i=STUDY_SAY.length; STUDY_SAY.push(say(w));
-      return `<span class="chip" onclick="speakWord(${i})">${esc(w)}</span>`; }).join('');
+      return `<span class="chip" onclick="speakWord(${i})">${esc(disp(w))}</span>`; }).join('');
     return `<div class="tier">${chips}</div>`;
   }).join('');
 
@@ -401,7 +402,7 @@ function renderBrowse(){
       return `<div class="concept">
         <div class="ch"><div class="cth">${esc(c.th)} <span class="cpos">${esc(c.pos)}</span></div>
           <div class="due">${dueTxt}</div></div>
-        <div class="cw">${words.map(esc).join(' · ')}</div>
+        <div class="cw">${words.map(w=>esc(disp(w))).join(' · ')}</div>
       </div>`;
     }).join('');
 }
