@@ -111,6 +111,7 @@
     <button id="nav-packs" class="on" onclick="go('packs')"><span class="ic">📦</span>Packs</button>
     <button id="nav-study" onclick="go('study')"><span class="ic">🎯</span>Study</button>
     <button id="nav-browse" onclick="go('browse')"><span class="ic">📚</span>Words</button>
+    <button id="nav-profiles" onclick="go('profiles')"><span class="ic">👤</span>Profile</button>
   </nav>
 </div>
 
@@ -212,16 +213,84 @@ const PACKS = {
 ]
 };
 
-// ---------- storage ----------
-const KEY="vokab.v2";   // v2: new "Vocab by P'N" cluster deck (old v1 word deck removed)
+// ---------- storage + cloud sync ----------
+// FIXED profiles (Netflix-style chooser). Edit this list to whoever uses the app.
+const PROFILE_NAMES = ["Nesta", "Pordee", "Non", "Poom", "Modi", "Raymond"];
+
+function cryptoId(){ return Math.random().toString(36).slice(2,10); }
+
+// which profile is active on THIS device (each profile's deck lives at "vokab.v2.<name>")
+let activeName = localStorage.getItem("vokab.active") || null;
+if(activeName && !PROFILE_NAMES.includes(activeName)) activeName=null;
+function dataKey(){ return "vokab.v2."+activeName; }
+
+// ----- cloud (Supabase) connect codes: kept in localStorage, NEVER in code (public repo) -----
+const CFG_KEY="vokab.cloud";
+// Baked-in cloud so both phones connect automatically (no Settings step).
+// This is the PUBLIC publishable key — it can only touch the vokab_profiles table. Safe to ship.
+const CLOUD_DEFAULT={
+  url:"https://slpnksjbtkmwrwanzcdo.supabase.co",
+  key:"sb_publishable_qsGTPjzn3NKqeBIJ69Ua8Q_dmxD79md"
+};
+function cloudCfg(){
+  try{ const c=JSON.parse(localStorage.getItem(CFG_KEY)); if(c && c.url && c.key) return c; }catch(e){}
+  return CLOUD_DEFAULT;
+}
+function saveCloudCfg(c){ localStorage.setItem(CFG_KEY, JSON.stringify(c)); }
+function cloudOn(){ const c=cloudCfg(); return !!(c.url && c.key); }
+function restBase(){ return cloudCfg().url.replace(/\/+$/,'').replace(/\/rest\/v1$/,'')+"/rest/v1/vokab_profiles"; }
+function cloudHeaders(extra){ const c=cloudCfg(); return Object.assign({apikey:c.key, Authorization:"Bearer "+c.key}, extra||{}); }
+
+async function cloudPull(name){
+  if(!cloudOn()) return null;
+  try{
+    const r=await fetch(restBase()+"?name=eq."+encodeURIComponent(name)+"&select=data", {headers:cloudHeaders()});
+    if(!r.ok) return null;
+    const rows=await r.json();
+    return (rows && rows[0] && rows[0].data) || null;
+  }catch(e){ return null; }
+}
+async function cloudPush(name, data){
+  if(!cloudOn()) return false;
+  try{
+    const r=await fetch(restBase(), {
+      method:"POST",
+      headers:cloudHeaders({"Content-Type":"application/json", Prefer:"resolution=merge-duplicates"}),
+      body:JSON.stringify({name, data})
+    });
+    return r.ok;
+  }catch(e){ return false; }
+}
+let pushT=null;
+function schedulePush(){
+  if(!cloudOn() || !activeName) return;
+  clearTimeout(pushT);
+  const name=activeName, snap=DB;
+  pushT=setTimeout(()=>{ if(snap) cloudPush(name, snap); }, 800);
+}
+
 function load(){
-  let s=localStorage.getItem(KEY);
+  let s=localStorage.getItem(dataKey());
   if(s){ try{ const db=JSON.parse(s); if(db && db.cards) { syncPacks(db); return db; } }catch(e){} }
-  const db={cards:[], created:Date.now()};
+  const db={cards:[], created:Date.now(), updated:0};
   syncPacks(db); save(db); return db;
 }
-function save(db){ localStorage.setItem(KEY, JSON.stringify(db)); }
-function cryptoId(){ return Math.random().toString(36).slice(2,10); }
+function save(db){
+  if(!activeName) return;
+  db.updated=Date.now();
+  localStorage.setItem(dataKey(), JSON.stringify(db));
+  schedulePush();              // push to cloud (debounced) if connected
+}
+
+// one-time migration: old flat "vokab.v2" deck → first fixed profile, so nothing is lost
+(function migrate(){
+  const old=localStorage.getItem("vokab.v2");
+  if(old!=null){
+    const first=PROFILE_NAMES[0];
+    if(localStorage.getItem("vokab.v2."+first)==null) localStorage.setItem("vokab.v2."+first, old);
+    localStorage.removeItem("vokab.v2");
+  }
+})();
 
 // build a study card from a pack entry
 function toCard(e, pack){
@@ -245,7 +314,7 @@ function syncPacks(db){
   }
 }
 
-let DB = load();
+let DB = activeName ? load() : null;
 let currentPack = null;
 
 // ---------- spaced repetition (simplified SM-2) ----------
@@ -287,22 +356,96 @@ let revealed=false;
 let current=null;
 
 function go(v){ view=v; revealed=false;
-  ['packs','study','browse'].forEach(n=>document.getElementById('nav-'+n).classList.toggle('on',n===v));
+  ['packs','study','browse','profiles'].forEach(n=>document.getElementById('nav-'+n).classList.toggle('on',n===v));
   render();
 }
 function render(){
   renderStats();
+  // no profile picked yet → force the "Who's studying?" chooser first
+  if(!activeName) return renderProfiles();
+  if(view==='profiles') return renderProfiles();
   if(view==='packs') return renderPacks();
   if(view==='study') return renderStudy();
   if(view==='browse') return renderBrowse();
 }
 function renderStats(){
+  const el=document.getElementById('stats');
+  if(!activeName){ el.innerHTML='pick a profile →'; return; }
+  const cloud = cloudOn() ? '☁️' : '⚠️';
   if(currentPack){
-    const due=dueCards(currentPack).length, total=packCards(currentPack).length;
-    document.getElementById('stats').innerHTML=`${esc(currentPack)}<br><b style="color:var(--accent)">${due}</b> due now`;
+    const due=dueCards(currentPack).length;
+    el.innerHTML=`👤 ${esc(activeName)} ${cloud}· ${esc(currentPack)}<br><b style="color:var(--accent)">${due}</b> due now`;
   } else {
-    document.getElementById('stats').innerHTML='pick a pack →';
+    el.innerHTML=`👤 ${esc(activeName)} ${cloud}<br><span style="font-size:11px">pick a pack →</span>`;
   }
+}
+
+function renderProfiles(){
+  const m=document.getElementById('main');
+  const chooser = PROFILE_NAMES.map((n,i)=>{
+    const on=(n===activeName);
+    const initial=esc((n[0]||'?').toUpperCase());
+    return `<div class="pack" onclick="pickProfile(${i})" style="${on?'border-color:var(--accent)':''}">
+      <div style="flex:1;display:flex;align-items:center;gap:14px">
+        <div style="width:46px;height:46px;border-radius:12px;background:var(--accent);color:#0c1024;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800">${initial}</div>
+        <div>
+          <div class="pname">${esc(n)} ${on?'<span style="color:var(--good);font-size:13px;font-weight:600">● using</span>':''}</div>
+          <div class="pmeta">tap to study as ${esc(n)}</div>
+        </div>
+      </div>
+      <div class="parrow">›</div>
+    </div>`;
+  }).join('');
+
+  const c=cloudCfg(), connected=cloudOn();
+  const status = connected
+    ? '<b style="color:var(--good)">Connected ✓</b> — progress syncs across phones. Enter the same two codes on the other phone.'
+    : '<b style="color:var(--again)">Not connected</b> — progress stays on this phone only. Paste your Supabase codes below to sync.';
+  const inputCss="width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px;font-size:14px;font-family:inherit";
+  const cloudBox = `<div class="card">
+      <h3 style="margin:0 0 6px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">☁️ Cloud sync</h3>
+      <div class="small" style="margin-bottom:10px">${status}</div>
+      <input id="curl" placeholder="Project URL (https://xxxx.supabase.co)" autocomplete="off" value="${esc(c.url||'')}" style="${inputCss};margin-bottom:8px" />
+      <input id="ckey" placeholder="anon public key" autocomplete="off" value="${esc(c.key||'')}" style="${inputCss}" />
+      <div class="row">
+        <button class="act b-show" onclick="saveCloud()">${connected?'Update':'Connect'}</button>
+        ${connected?'<button class="act b-ghost" onclick="disconnectCloud()">Disconnect</button>':''}
+      </div>
+    </div>`;
+
+  m.innerHTML = `<div class="small" style="margin:6px 4px 14px">Who's studying?</div>` + chooser + cloudBox;
+}
+function pickProfile(i){ selectProfile(PROFILE_NAMES[i]); }
+async function selectProfile(name){
+  if(!PROFILE_NAMES.includes(name)) return;
+  activeName=name; localStorage.setItem("vokab.active", name);
+  DB=load(); currentPack=null; revealed=false; view='packs'; render();
+  flash('Hi '+name+' 👋');
+  if(cloudOn()){
+    flash('Syncing…');
+    const remote=await cloudPull(name);
+    if(name!==activeName) return;   // user switched again while we waited
+    if(remote && (remote.updated||0) > (DB.updated||0)){
+      DB=remote; syncPacks(DB);
+      localStorage.setItem(dataKey(), JSON.stringify(DB));  // keep cloud's timestamp, don't re-push
+      render(); flash('Synced ✓');
+    } else {
+      cloudPush(name, DB); flash('Up to date ✓');
+    }
+  }
+}
+function saveCloud(){
+  const url=(document.getElementById('curl').value||'').trim();
+  const key=(document.getElementById('ckey').value||'').trim();
+  if(!url||!key){ flash('Paste both codes first'); return; }
+  saveCloudCfg({url, key});
+  flash('Cloud connected ✓');
+  if(activeName && DB) cloudPush(activeName, DB);   // seed the cloud with this phone's progress
+  render();
+}
+function disconnectCloud(){
+  if(!confirm('Disconnect cloud sync on this phone? Your progress stays saved locally.')) return;
+  localStorage.removeItem(CFG_KEY); render();
 }
 
 function renderPacks(){
