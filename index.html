@@ -2104,14 +2104,14 @@ let STUDY_SAY = [];
 let pushT = null;
 
 // ====== Utils ======
-const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const esc = (s) => (s == null ? '' : String(s)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 // Safe to drop inside a single-quoted JS string that lives in an HTML attribute
 // (e.g. onclick="fn('...')"). Escapes backslash/quote for JS, then & < > " for HTML.
 const jsAttr = (s) => String(s)
   .replace(/\\/g, '\\\\').replace(/'/g, "\\'")
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-const disp = (w) => w.replace(/'(?!s\b)/g, '');
-const say = (w) => w.replace(/'/g, '').replace(/\([^)]*\)/g, '').replace(/[=].*$/, '')
+const disp = (w) => (w == null ? '' : String(w)).replace(/'(?!s\b)/g, '');
+const say = (w) => (w == null ? '' : String(w)).replace(/'/g, '').replace(/\([^)]*\)/g, '').replace(/[=].*$/, '')
   .replace(/\+/g, '').replace(/[\/]/g, ' ').replace(/\s+/g, ' ').trim();
 const cryptoId = () => Math.random().toString(36).slice(2, 10);
 const dataKey = () => "vokab.v2." + activeName;
@@ -2505,8 +2505,8 @@ function renderStudy() {
   const c = current;
 
   STUDY_SAY = [];
-  const tiersHtml = c.groups.map(g => {
-    const chips = g.map(w => {
+  const tiersHtml = (c.groups || []).map(g => {
+    const chips = (g || []).map(w => {
       const i = STUDY_SAY.length;
       STUDY_SAY.push(say(w));
       return `<span class="chip" onclick="speakWord(${i})">${esc(disp(w))}</span>`;
@@ -2588,7 +2588,7 @@ function renderWords() {
 
   m.innerHTML = `<div class="small" style="margin:6px 4px 12px">${esc(currentPack)} · ${cards.length} groups</div>` +
     sorted.map((c, idx) => {
-      const words = c.groups.flat();
+      const words = (c.groups || []).flat();
       const days = Math.max(0, Math.round((c.due - Date.now()) / DAY));
       const dueTxt = c.due <= Date.now() ? (c.reps ? 'due' : 'new') : `in ${days}d`;
       const firstWord = c.groups[0] && c.groups[0][0] ? disp(c.groups[0][0]) : 'Word';
