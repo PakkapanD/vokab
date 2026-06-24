@@ -1,7 +1,9 @@
 dist/
 node_modules/
 ._check.js
+_fixdefs.js
 fetch_defs.js
 packs_with_defs.json
+images/
 .DS_Store
 *.log

@@ -25,6 +25,11 @@ let pushT = null;
 
 // ====== Utils ======
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// Safe to drop inside a single-quoted JS string that lives in an HTML attribute
+// (e.g. onclick="fn('...')"). Escapes backslash/quote for JS, then & < > " for HTML.
+const jsAttr = (s) => String(s)
+  .replace(/\\/g, '\\\\').replace(/'/g, "\\'")
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const disp = (w) => w.replace(/'(?!s\b)/g, '');
 const say = (w) => w.replace(/'/g, '').replace(/\([^)]*\)/g, '').replace(/[=].*$/, '')
   .replace(/\+/g, '').replace(/[\/]/g, ' ').replace(/\s+/g, ' ').trim();
@@ -250,7 +255,7 @@ function toggleProfileMenu() {
     dd.innerHTML = PROFILE_NAMES.map(n => {
       const active = n === activeName ? 'var(--accent)' : 'var(--ink)';
       const bg = n === activeName ? 'var(--card2)' : 'transparent';
-      return `<div style="padding:10px 12px;cursor:pointer;color:${active};background:${bg};font-size:13px" onclick="selectProfile('${n}');toggleProfileMenu()">${esc(n)}</div>`;
+      return `<div style="padding:10px 12px;cursor:pointer;color:${active};background:${bg};font-size:13px" onclick="selectProfile('${jsAttr(n)}');toggleProfileMenu()">${esc(n)}</div>`;
     }).join('');
   }
 
@@ -265,7 +270,7 @@ function togglePackMenu() {
     dd.innerHTML = Object.keys(PACKS).map(name => {
       const active = name === currentPack ? 'var(--accent)' : 'var(--ink)';
       const bg = name === currentPack ? 'var(--card2)' : 'transparent';
-      return `<div style="padding:10px 12px;cursor:pointer;color:${active};background:${bg};font-size:13px" onclick="selectPack('${esc(name)}');togglePackMenu()">${esc(name)}</div>`;
+      return `<div style="padding:10px 12px;cursor:pointer;color:${active};background:${bg};font-size:13px" onclick="selectPack('${jsAttr(name)}');togglePackMenu()">${esc(name)}</div>`;
     }).join('');
   }
 
@@ -374,7 +379,7 @@ function renderPackChooser() {
     const due = dueCards(name).length;
     const pct = total ? Math.round(learned / total * 100) : 0;
 
-    return `<div class="pack" onclick="selectPack('${esc(name)}')">
+    return `<div class="pack" onclick="selectPack('${jsAttr(name)}')">
       <div style="flex:1">
         <div class="pname">${esc(name)}</div>
         <div class="pmeta">${total} groups · ${learned} started · <b style="color:var(--accent)">${due} due</b></div>
