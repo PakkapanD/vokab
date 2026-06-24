@@ -2127,7 +2127,9 @@ function load() {
   }
   const db = { cards: [], created: Date.now(), updated: 0 };
   syncPacks(db);
-  save(db);
+  // Persist WITHOUT bumping `updated` — a brand-new empty deck must stay
+  // "older" than any cloud copy so a pull can win and not clobber progress.
+  localStorage.setItem(dataKey(), JSON.stringify(db));
   return db;
 }
 
@@ -2245,11 +2247,19 @@ function restBase() {
   return cloudCfg().url.replace(/\/+$/, '').replace(/\/rest\/v1$/, '') + "/rest/v1/vokab_profiles";
 }
 
+// fetch with an abort timeout so a hung connection can never freeze the UI
+function fetchT(url, opts, ms) {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), ms || 8000);
+  return fetch(url, Object.assign({ signal: ctl.signal }, opts))
+    .finally(() => clearTimeout(t));
+}
+
 async function cloudPull(name) {
   if (!cloudOn()) return null;
   try {
     const url = restBase() + "?name=eq." + encodeURIComponent(name) + "&select=data";
-    const r = await fetch(url, { headers: cloudHeaders() });
+    const r = await fetchT(url, { headers: cloudHeaders() });
     if (!r.ok) return null;
     const rows = await r.json();
     return (rows && rows[0] && rows[0].data) || null;
@@ -2261,7 +2271,7 @@ async function cloudPull(name) {
 async function cloudPush(name, data) {
   if (!cloudOn()) return false;
   try {
-    const r = await fetch(restBase(), {
+    const r = await fetchT(restBase(), {
       method: "POST",
       headers: cloudHeaders({ "Content-Type": "application/json", Prefer: "resolution=merge-duplicates" }),
       body: JSON.stringify({ name, data })
@@ -2418,15 +2428,19 @@ async function selectProfile(name) {
   const remote = await cloudPull(name);
   if (name !== activeName) return;
 
-  if (remote && (remote.updated || 0) > (DB.updated || 0)) {
-    DB = remote;
-    syncPacks(DB);
-    localStorage.setItem(dataKey(), JSON.stringify(DB));
-    render();
-    flash('Synced ✓');
-  } else {
-    cloudPush(name, DB);
-    flash('Up to date ✓');
+  try {
+    if (remote && Array.isArray(remote.cards) && (remote.updated || 0) > (DB.updated || 0)) {
+      DB = remote;
+      syncPacks(DB);
+      localStorage.setItem(dataKey(), JSON.stringify(DB));
+      render();
+      flash('Synced ✓');
+    } else {
+      cloudPush(name, DB);
+      flash('Up to date ✓');
+    }
+  } catch (e) {
+    flash('Sync skipped');
   }
 }
 
